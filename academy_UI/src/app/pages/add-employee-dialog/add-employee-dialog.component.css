@@ -1,0 +1,16 @@
+.employee-container {
+  transition: background-color 0.4s, color 0.4s;
+}
+
+.dark .employee-container {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+table {
+  width: 100%;
+}
+
+mat-form-field {
+  min-width: 160px;
+}

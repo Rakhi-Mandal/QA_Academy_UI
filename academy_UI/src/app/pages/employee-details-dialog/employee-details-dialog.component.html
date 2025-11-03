@@ -1,0 +1,74 @@
+<div class="relative dialog-container p-6 rounded-2xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+
+  <!-- Close button (top-right) -->
+  <button mat-icon-button (click)="closeDialog()" class="absolute top-3 right-3">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+    <mat-icon color="primary">person</mat-icon>
+    Employee Details
+  </h2>
+
+  <ng-container *ngIf="employeeData; else notFound">
+    <!-- Basic Info -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div><strong>ID:</strong> {{ employeeData?.employeeId }}</div>
+      <div><strong>Name:</strong> {{ employeeData?.name }}</div>
+      <div><strong>Email:</strong> {{ employeeData?.email }}</div>
+      <div><strong>Designation:</strong> {{ employeeData?.designation }}</div>
+      <div><strong>Manager:</strong> {{ employeeData?.manager }}</div>
+      <div><strong>Joining Date:</strong> {{ employeeData?.joiningDate | date }}</div>
+    </div>
+
+    <!-- Combined Progress Bars -->
+    <div class="grid grid-cols-2 gap-6 mt-4">
+      <div>
+        <h3 class="font-medium mb-2">Overall Assessment Progress</h3>
+        <mat-progress-bar mode="determinate" [value]="employeeData?.assessmentProgress"></mat-progress-bar>
+        <p class="text-sm mt-1">{{ employeeData?.assessmentProgress }}%</p>
+      </div>
+
+      <div>
+        <h3 class="font-medium mb-2">Overall Certification Progress</h3>
+        <mat-progress-bar mode="determinate" color="accent" [value]="employeeData?.certificationProgress"></mat-progress-bar>
+        <p class="text-sm mt-1">{{ employeeData?.certificationProgress }}%</p>
+      </div>
+    </div>
+
+    <!-- Assessments & Certifications side by side -->
+    <div class="grid grid-cols-2 gap-6 mt-6">
+      <!-- Assessments -->
+      <div>
+        <h3 class="font-semibold text-lg mb-2 flex items-center gap-2">
+          <mat-icon color="primary">assignment</mat-icon>
+          Assessments
+        </h3>
+        <table class="w-full border-collapse text-sm">
+          <tr *ngFor="let a of employeeData?.assessments" class="border-b border-gray-300 dark:border-gray-700">
+            <td class="py-2">{{ a.name }}</td>
+            <td class="text-right font-medium">{{ a.score }}%</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Certifications -->
+      <div>
+        <h3 class="font-semibold text-lg mb-2 flex items-center gap-2">
+          <mat-icon color="accent">workspace_premium</mat-icon>
+          Certifications
+        </h3>
+        <table class="w-full border-collapse text-sm">
+          <tr *ngFor="let c of employeeData.certifications" class="border-b border-gray-300 dark:border-gray-700">
+            <td class="py-2">{{ c.name }}</td>
+            <td class="text-right font-medium">{{ c.completion }}%</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #notFound>
+    <p class="text-center text-red-500 mt-4">Employee details not found.</p>
+  </ng-template>
+</div>

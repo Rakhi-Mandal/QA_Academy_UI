@@ -1,0 +1,106 @@
+<div class="employee-container mat-elevation-z4 transition-all duration-500 p-6 rounded-2xl bg-white dark:bg-gray-900">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold flex items-center gap-2 dark:text-white">
+    <span>Fastrack Batch Employees</span>
+    </h2>
+  </div>
+  <!-- Filters -->
+  <div class="flex flex-wrap gap-3 justify-end items-center mb-3">
+    <mat-form-field appearance="fill">
+      <mat-label>Designation</mat-label>
+      <mat-select [(value)]="selectedDesignation" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option *ngFor="let d of designations" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field  appearance="fill" class="w-48">
+      <mat-label>Assessments</mat-label>
+      <mat-select [(value)]="selectedAssessment" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option value="Below 50%">Below 50%</mat-option>
+        <mat-option value="50%-80%">50%-80%</mat-option>
+        <mat-option value="Above 80%">Above 80%</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field  class="w-48">
+      <mat-label>Certifications</mat-label>
+      <mat-select [(value)]="selectedCertification" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option value="Below 50%">Below 50%</mat-option>
+        <mat-option value="50%-80%">50%-80%</mat-option>
+        <mat-option value="Above 80%">Above 80%</mat-option>
+      </mat-select>
+    </mat-form-field>
+          <!-- Refresh Button -->
+      <button  mat-icon-button class="table-button" (click)="refreshData()" matTooltip="Refresh Data">
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <!-- Add Button -->
+      <button mat-mini-fab class="table-button" (click)="openAddDialog()" matTooltip="Add New Employee">
+        <mat-icon>add</mat-icon>
+      </button>
+  </div>
+
+  <!-- Table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 w-full dark:text-gray-100">
+
+    <ng-container matColumnDef="slNo">
+      <th mat-header-cell *matHeaderCellDef> SL No </th>
+      <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="employeeId">
+      <th mat-header-cell *matHeaderCellDef> Employee ID </th>
+      <td mat-cell *matCellDef="let element">{{ element.employeeId }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Employee Name </th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="designation">
+      <th mat-header-cell *matHeaderCellDef> Designation </th>
+      <td mat-cell *matCellDef="let element">{{ element.designation }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="assessment">
+      <th mat-header-cell *matHeaderCellDef> Assessment </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-progress-bar mode="determinate" [value]="element.assessment"></mat-progress-bar>
+        <span>{{ element.assessment }}%</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="certification">
+      <th mat-header-cell *matHeaderCellDef> Certification </th>
+      <td mat-cell *matCellDef="let element">
+        <mat-progress-bar mode="determinate" [value]="element.certification"></mat-progress-bar>
+        <span>{{ element.certification }}%</span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="action">
+  <th mat-header-cell *matHeaderCellDef> Action </th>
+  <td mat-cell *matCellDef="let element">
+    <button mat-icon-button color="primary" matTooltip="View Details" (click)="openEmployeeDetails(element)">
+      <mat-icon>visibility</mat-icon>
+    </button>
+  </td>
+</ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [length]="dataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+  </mat-paginator>
+</div>

@@ -1,0 +1,32 @@
+.dialog-container {
+  min-width: 400px;
+  transition: all 0.3s ease-in-out;
+}
+
+:host-context(.dark) .dialog-container {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+mat-progress-bar {
+  height: 8px;
+  border-radius: 8px;
+}
+.dialog-container {
+  min-width: 480px;
+  max-width: 650px;
+  transition: all 0.3s ease-in-out;
+}
+
+mat-progress-bar {
+  height: 8px;
+  border-radius: 8px;
+}
+
+table td {
+  padding: 6px 0;
+}
+
+.dark-mode table td {
+  color: #e5e7eb;
+}
