@@ -1,78 +1,93 @@
 """
-Database Connection Management
-Handles MySQL database connections
+Database Connection Module
+Handles MySQL database connections and query execution
 """
+
 import mysql.connector
 from mysql.connector import Error
-from config import settings
+from typing import Optional
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 
 def get_db_connection():
     """
-    Create and return a database connection
+    Create and return a MySQL database connection
     
     Returns:
-        connection: MySQL connection object or None if failed
+        MySQL connection object or None if connection fails
     """
     try:
         connection = mysql.connector.connect(
-            host=settings.DB_HOST,
-            port=settings.DB_PORT,
-            user=settings.DB_USER,
-            password=settings.DB_PASSWORD,
-            database=settings.DB_NAME
+            host=os.getenv('DB_HOST', 'localhost'),
+            user=os.getenv('DB_USER', 'root'),
+            password=os.getenv('DB_PASSWORD', ''),
+            database=os.getenv('DB_NAME', 'qe_academy'),
+            port=int(os.getenv('DB_PORT', 3306))
         )
         
         if connection.is_connected():
             return connection
-            
+        
     except Error as e:
         print(f"Error connecting to MySQL database: {e}")
         return None
 
+
 def close_db_connection(connection):
     """
-    Close database connection safely
+    Close the database connection
     
     Args:
-        connection: MySQL connection object
+        connection: MySQL connection object to close
     """
-    if connection and connection.is_connected():
-        connection.close()
+    try:
+        if connection and connection.is_connected():
+            connection.close()
+    except Error as e:
+        print(f"Error closing database connection: {e}")
 
-def execute_query(query: str, params: tuple = None, fetch: str = "all"):
+
+def execute_query(query: str, params: Optional[tuple] = None, fetch: bool = True):
     """
-    Execute a database query with automatic connection management
+    Execute a SQL query with error handling
     
     Args:
         query: SQL query string
         params: Query parameters (optional)
-        fetch: 'all', 'one', or 'none' for SELECT queries
+        fetch: Whether to fetch results (default: True)
         
     Returns:
-        Query results or None
+        Query results if fetch=True, else number of affected rows
     """
     connection = get_db_connection()
     if not connection:
-        return None
+        return None if fetch else 0
     
     try:
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute(query, params or ())
+        cursor = connection.cursor(dictionary=True) if fetch else connection.cursor()
         
-        if fetch == "all":
-            result = cursor.fetchall()
-        elif fetch == "one":
-            result = cursor.fetchone()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        
+        if fetch:
+            results = cursor.fetchall()
+            return results
         else:
             connection.commit()
-            result = cursor.lastrowid
+            return cursor.rowcount
             
-        cursor.close()
-        return result
-        
     except Error as e:
         print(f"Error executing query: {e}")
-        return None
+        if not fetch:
+            connection.rollback()
+        return None if fetch else 0
         
     finally:
+        cursor.close()
         close_db_connection(connection)
