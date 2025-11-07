@@ -17,7 +17,7 @@ import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/em
   selector: 'app-fastrack',
   standalone: true,
   templateUrl: './fastrack.component.html',
-  styleUrls: ['./fastrack.component.css'],
+  styleUrls: ['./fastrack.component.scss'],
   imports: [
     CommonModule,
     FormsModule,
