@@ -22,15 +22,16 @@ interface CalendarDay {
   animations: [
     trigger('listAnimation', [
       transition('* => *', [
+        query(':leave', [
+          animate('200ms cubic-bezier(0.4, 0.0, 1, 1)', 
+            style({ opacity: 0, transform: 'translateY(-10px) scale(0.98)' })
+          )
+        ], { optional: true }),
         query(':enter', [
-          style({ opacity: 0, transform: 'translateY(30px) scale(0.9)' }),
-          stagger(60, [
-            animate('500ms cubic-bezier(0.35, 0, 0.25, 1)', 
-              keyframes([
-                style({ opacity: 0, transform: 'translateY(30px) scale(0.9)', offset: 0 }),
-                style({ opacity: 0.5, transform: 'translateY(-10px) scale(1.05)', offset: 0.5 }),
-                style({ opacity: 1, transform: 'translateY(0) scale(1)', offset: 1 })
-              ])
+          style({ opacity: 0, transform: 'translateY(15px) scale(0.98)' }),
+          stagger(30, [
+            animate('400ms cubic-bezier(0.4, 0.0, 0.2, 1)', 
+              style({ opacity: 1, transform: 'translateY(0) scale(1)' })
             )
           ])
         ], { optional: true })
@@ -66,13 +67,14 @@ interface CalendarDay {
     ]),
     trigger('scaleIn', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.8) rotate(-5deg)' }),
-        animate('600ms cubic-bezier(0.68, -0.55, 0.265, 1.55)', 
-          keyframes([
-            style({ opacity: 0, transform: 'scale(0.8) rotate(-5deg)', offset: 0 }),
-            style({ opacity: 0.5, transform: 'scale(1.1) rotate(2deg)', offset: 0.6 }),
-            style({ opacity: 1, transform: 'scale(1) rotate(0)', offset: 1 })
-          ])
+        style({ opacity: 0, transform: 'scale(0.96)' }),
+        animate('350ms cubic-bezier(0.4, 0.0, 0.2, 1)', 
+          style({ opacity: 1, transform: 'scale(1)' })
+        )
+      ]),
+      transition(':leave', [
+        animate('250ms cubic-bezier(0.4, 0.0, 1, 1)', 
+          style({ opacity: 0, transform: 'scale(0.96)' })
         )
       ])
     ]),
