@@ -123,18 +123,18 @@
     <div class="flex flex-wrap gap-3 mb-6" @slideIn>
       <button
         (click)="setFilter('all')"
-        [class.bg-white]="true"
-        [class.text-gray-700]="true"
-        [class.border-gray-300]="true"
-        class="px-5 py-2 rounded-lg font-medium shadow-sm border hover:shadow-md transition-all duration-300">
+        [class.active]="activeFilter === 'all'"
+        [class.all-active]="activeFilter === 'all'"
+        [class.inactive]="activeFilter !== 'all'"
+        class="filter-button">
         All Items <span class="ml-1" *ngIf="stats$ | async as stats">({{ stats.totalAssignments + stats.totalCertifications }})</span>
       </button>
       <button
         (click)="setFilter('assessments')"
-        [class.bg-white]="true"
-        [class.text-gray-700]="true"
-        [class.border-gray-300]="true"
-        class="px-5 py-2 rounded-lg font-medium shadow-sm border hover:shadow-md transition-all duration-300 flex items-center gap-2">
+        [class.active]="activeFilter === 'assessments'"
+        [class.assessment-active]="activeFilter === 'assessments'"
+        [class.inactive]="activeFilter !== 'assessments'"
+        class="filter-button flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
@@ -142,13 +142,10 @@
       </button>
       <button
         (click)="setFilter('certifications')"
-        [class.bg-[#FFA500]]="activeFilter === 'certifications'"
-        [class.text-white]="activeFilter === 'certifications'"
-        [class.border-[#FFA500]]="activeFilter === 'certifications'"
-        [class.bg-white]="activeFilter !== 'certifications'"
-        [class.text-gray-700]="activeFilter !== 'certifications'"
-        [class.border-gray-300]="activeFilter !== 'certifications'"
-        class="px-5 py-2 rounded-lg font-medium shadow-sm border hover:shadow-md transition-all duration-300 flex items-center gap-2">
+        [class.active]="activeFilter === 'certifications'"
+        [class.certification-active]="activeFilter === 'certifications'"
+        [class.inactive]="activeFilter !== 'certifications'"
+        class="filter-button flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
         </svg>
@@ -161,19 +158,22 @@
       <div class="space-y-4" *ngIf="calendarItems$ | async as items" @listAnimation>
         <div
           *ngFor="let item of items; trackBy: trackByItemId"
+          [class.calendar-card]="true"
+          [class.assessment-card]="item.type === 'assessment'"
+          [class.certification-card]="item.type === 'certification'"
           [class.bg-[#FFF9E6]]="item.type === 'certification'"
           [class.bg-white]="item.type !== 'certification'"
-          class="dark:bg-gray-800 rounded-2xl shadow-sm border p-6 hover:shadow-lg transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.01] cursor-pointer"
+          class="dark:bg-gray-800 border p-6 cursor-pointer"
           [class.border-yellow-200]="item.type === 'certification'"
           [class.border-gray-200]="item.type !== 'certification'"
           @scaleIn>
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between card-content">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-3">
                 <div 
                   [class.bg-yellow-100]="item.type === 'certification'"
                   [class.bg-blue-100]="item.type !== 'certification'"
-                  class="p-3 rounded-xl transform transition-transform duration-300 hover:rotate-6">
+                  class="p-3 rounded-xl icon-rotate-hover">
                   <svg *ngIf="item.type === 'assessment'" class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
@@ -191,7 +191,7 @@
             <div class="flex flex-col items-end gap-3 ml-6">
               <span
                 *ngIf="item.type === 'certification'"
-                class="px-4 py-1.5 rounded-full bg-[#FFA500] text-white text-xs font-semibold whitespace-nowrap flex items-center gap-1 transform transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                class="px-4 py-1.5 rounded-full bg-[#FFA500] text-white text-xs font-semibold whitespace-nowrap flex items-center gap-1 badge-scale-hover">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                 </svg>
@@ -200,7 +200,7 @@
               <span
                 *ngIf="item.type === 'assessment'"
                 [ngClass]="getStatusClass(item.status)"
-                class="px-4 py-1.5 rounded-full text-white text-xs font-semibold whitespace-nowrap transform transition-all duration-300 hover:scale-110 hover:shadow-lg">
+                class="px-4 py-1.5 rounded-full text-white text-xs font-semibold whitespace-nowrap badge-scale-hover">
                 {{ getStatusText(item.status) }}
               </span>
               <div class="text-right">

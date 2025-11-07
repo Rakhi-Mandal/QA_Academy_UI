@@ -18,7 +18,7 @@ interface CalendarDay {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css'],
+  styleUrls: ['./calendar.component.scss'],
   animations: [
     trigger('listAnimation', [
       transition('* => *', [
