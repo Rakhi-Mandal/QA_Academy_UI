@@ -284,7 +284,15 @@ export class CalendarComponent implements OnInit {
       width: '600px',
       maxWidth: '90vw',
       data: { item },
-      disableClose: false
+      disableClose: false,
+      hasBackdrop: true,
+      backdropClass: 'dialog-backdrop',
+      panelClass: 'submission-dialog-panel',
+      autoFocus: true,
+      restoreFocus: true,
+      position: {
+        top: '50px'
+      }
     });
 
     dialogRef.afterClosed().subscribe((result: SubmissionResult | undefined) => {
