@@ -94,7 +94,7 @@ interface CalendarDay {
 export class CalendarComponent implements OnInit {
   calendarItems$!: Observable<CalendarItem[]>;
   stats$!: Observable<CalendarStats>;
-  activeFilter: 'all' | 'assessments' | 'certifications' = 'certifications';
+  activeFilter: 'all' | 'assessments' | 'certifications' = 'all';
   viewMode: 'timeline' | 'calendar' = 'timeline';
   
   currentDate: Date = new Date();
