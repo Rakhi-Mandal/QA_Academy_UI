@@ -39,7 +39,8 @@ import { Observable } from 'rxjs';
 export class CalendarComponent implements OnInit {
   calendarItems$!: Observable<CalendarItem[]>;
   stats$!: Observable<CalendarStats>;
-  activeFilter: 'all' | 'assessments' | 'certifications' = 'all';
+  activeFilter: 'all' | 'assessments' | 'certifications' = 'certifications';
+  viewMode: 'timeline' | 'calendar' = 'timeline';
 
   constructor(private calendarService: CalendarDataService) {}
 
@@ -55,6 +56,10 @@ export class CalendarComponent implements OnInit {
   setFilter(filter: 'all' | 'assessments' | 'certifications'): void {
     this.activeFilter = filter;
     this.loadData();
+  }
+
+  setViewMode(mode: 'timeline' | 'calendar'): void {
+    this.viewMode = mode;
   }
 
   getStatusClass(status: string): string {
