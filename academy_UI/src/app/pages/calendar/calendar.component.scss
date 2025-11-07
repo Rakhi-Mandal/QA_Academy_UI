@@ -17,7 +17,7 @@
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.5s ease-in-out;
     z-index: 0;
   }
 
@@ -34,10 +34,10 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 
     &::before {
-      width: 165px;
-      height: 165px;
-      top: -82.5px;
-      right: -82.5px;
+      width: 143px;
+      height: 143px;
+      top: -71.5px;
+      right: -71.5px;
     }
   }
 
