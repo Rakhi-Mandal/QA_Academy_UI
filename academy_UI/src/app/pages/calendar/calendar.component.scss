@@ -34,10 +34,10 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 
     &::before {
-      width: 144px;
-      height: 144px;
-      top: -72px;
-      right: -72px;
+      width: 180px;
+      height: 180px;
+      top: -90px;
+      right: -90px;
     }
   }
 
@@ -136,7 +136,7 @@
 }
 
 .calendar-card:hover .icon-rotate-hover {
-  transform: rotate(6deg);
+  transform: rotate(0deg);
 }
 
 .badge-scale-hover {
