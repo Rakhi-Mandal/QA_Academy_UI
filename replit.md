@@ -41,10 +41,15 @@ academy_Backend/
 ## Recent Changes
 
 ### Calendar UI Enhancements (November 7, 2025)
+- **Compact Card Design**: Optimized timeline cards for professional, space-efficient layout
+  - Reduced padding (p-6→p-4), tighter gaps (gap-3→gap-2), smaller margins (mb-3→mb-2)
+  - Smaller icons (w-6→w-5, p-3→p-2), compact badges (px-4 py-1.5→px-3 py-1)
+  - Reduced text sizes: title (text-lg→text-base), date (text-lg→text-base), day (text-sm→text-xs)
+  - Proportionally sized submit buttons (px-6 py-2→px-5 py-1.5) for balanced appearance
 - **Modern Card Design**: Added half-circle abstract design elements to timeline cards
-  - Positioned in top-right corner with 120px diameter
+  - Positioned in top-right corner with 110px diameter (optimized from 120px)
   - Gradient backgrounds: blue for assessments, yellow for certifications
-  - Smooth 2% radius increase on hover (120px → 122.4px)
+  - Smooth 50% expansion on hover (110px→165px) with elastic easing
   - Pure CSS animations with cubic-bezier easing (no JavaScript)
 - **Enhanced Filter Buttons**: Added active/clicked states for all filter buttons
   - "All Items": Cyan (#00A8CC) active state
@@ -53,16 +58,22 @@ academy_Backend/
   - Animated underline effect (::after pseudo-element) for active filter
   - Smooth transitions with lift effect on hover
 - **Card Interactions**: Professional hover effects throughout
-  - Lift and scale animation (translateY(-8px) scale(1.01))
-  - Enhanced shadow on hover (0 12px 24px)
-  - Icon rotation (6deg) on card hover
+  - Lift and scale animation (translateY(-6px) scale(1.01))
+  - Enhanced shadow on hover (0 10px 20px)
   - Badge scale effect (1.1x) on hover
+  - Stable icons (no rotation) for clean, professional appearance
 - **SCSS Architecture**: Migrated to component-specific SCSS for better maintainability
   - Organized styles with proper pseudo-elements
   - Accessibility support (prefers-reduced-motion)
-  - Professional dashboard-like appearance
+  - Professional dashboard-like appearance with optimized spacing
 
 ### Assessments & Certifications Calendar (November 7, 2025)
+- **Completion Tracking System**: Full-featured submission and completion workflow
+  - FormSubmissionDialogComponent with reactive forms (score, notes, file attachments)
+  - CalendarDataService manages completion state with BehaviorSubjects
+  - localStorage persistence with proper Date object hydration for nested metadata
+  - Strike-through styling for completed items with disabled "Completed" button
+  - Dynamic count updates: "0 Completed", "31 Remaining" badges sync with state
 - **Dual-View System**: Timeline View and Calendar Grid View with smooth transitions
 - **19 Assessments**: Across 6 waves (1A-6D including QE Innovation Hackathon)
 - **12 Certifications**: Using ProProfs, HackerRank, Codility, ISTQB, Azure platforms
