@@ -8,6 +8,7 @@ import { AlertsComponent } from './pages/ui-elements/alerts/alerts.component';
 import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { FastrackComponent } from './pages/dashboard/fastrack/fastrack.component';
+import { CalendarComponent } from './pages/calendar/calendar.component';
 
 
 export const routes: Routes = [
@@ -49,6 +50,11 @@ export const routes: Routes = [
         path:'alerts',
         component:AlertsComponent,
         title:'Angular Alerts Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'calendar',
+        component:CalendarComponent,
+        title:'Assessments & Certifications Calendar | TailAdmin - Angular Admin Dashboard Template'
       },
       
     ]

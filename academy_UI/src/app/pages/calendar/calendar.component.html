@@ -1,0 +1,161 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8" @fadeIn>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        Assessments & Certifications Calendar
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        Track your learning journey with scheduled assessments and certifications
+      </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" *ngIf="stats$ | async as stats" @listAnimation>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Assignments</p>
+            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">{{ stats.totalAssignments }}</p>
+          </div>
+          <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Certifications</p>
+            <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">{{ stats.totalCertifications }}</p>
+          </div>
+          <div class="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg">
+            <svg class="w-8 h-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+            <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{{ stats.completedItems }}</p>
+          </div>
+          <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Enrolled</p>
+            <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">{{ stats.upcomingItems }}</p>
+          </div>
+          <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
+            <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-6 p-2 inline-flex gap-2" @slideIn>
+      <button
+        (click)="setFilter('all')"
+        [class.bg-blue-500]="activeFilter === 'all'"
+        [class.text-white]="activeFilter === 'all'"
+        [class.text-gray-700]="activeFilter !== 'all'"
+        [class.dark:text-gray-300]="activeFilter !== 'all'"
+        class="px-6 py-2 rounded-md font-medium transition-all duration-200 hover:bg-blue-500 hover:text-white">
+        All Items ({{ (stats$ | async)?.totalAssignments! + (stats$ | async)?.totalCertifications! }})
+      </button>
+      <button
+        (click)="setFilter('assessments')"
+        [class.bg-blue-500]="activeFilter === 'assessments'"
+        [class.text-white]="activeFilter === 'assessments'"
+        [class.text-gray-700]="activeFilter !== 'assessments'"
+        [class.dark:text-gray-300]="activeFilter !== 'assessments'"
+        class="px-6 py-2 rounded-md font-medium transition-all duration-200 hover:bg-blue-500 hover:text-white">
+        Assignments ({{ (stats$ | async)?.totalAssignments }})
+      </button>
+      <button
+        (click)="setFilter('certifications')"
+        [class.bg-blue-500]="activeFilter === 'certifications'"
+        [class.text-white]="activeFilter === 'certifications'"
+        [class.text-gray-700]="activeFilter !== 'certifications'"
+        [class.dark:text-gray-300]="activeFilter !== 'certifications'"
+        class="px-6 py-2 rounded-md font-medium transition-all duration-200 hover:bg-blue-500 hover:text-white">
+        Certifications ({{ (stats$ | async)?.totalCertifications }})
+      </button>
+    </div>
+
+    <!-- Timeline View -->
+    <div class="space-y-4" *ngIf="calendarItems$ | async as items" @listAnimation>
+      <div
+        *ngFor="let item of items; trackBy: trackByItemId"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                <svg *ngIf="item.type === 'assessment'" class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <svg *ngIf="item.type === 'certification'" class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ item.title }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ item.description }}</p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-4">
+              <span
+                *ngFor="let tool of item.tools"
+                class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium">
+                {{ tool }}
+              </span>
+              <span
+                *ngIf="item.platform"
+                class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
+                {{ item.platform }}
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-end gap-3 ml-6">
+            <span
+              [ngClass]="getStatusClass(item.status)"
+              class="px-4 py-1 rounded-full text-white text-xs font-semibold whitespace-nowrap">
+              {{ getStatusText(item.status) }}
+            </span>
+            <div class="text-right">
+              <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(item.date) }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ getDayOfWeek(item.date) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="items.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">No items found for this filter</p>
+      </div>
+    </div>
+  </div>
+</div>
