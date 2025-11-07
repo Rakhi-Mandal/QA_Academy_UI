@@ -47,9 +47,9 @@ academy_Backend/
   - Reduced text sizes: title (text-lg→text-base), date (text-lg→text-base), day (text-sm→text-xs)
   - Proportionally sized submit buttons (px-6 py-2→px-5 py-1.5) for balanced appearance
 - **Modern Card Design**: Added half-circle abstract design elements to timeline cards
-  - Positioned in top-right corner with 110px diameter
+  - Positioned in top-right corner with 120px diameter
   - Gradient backgrounds: blue for assessments, yellow for certifications
-  - Smooth 30% expansion on hover (110px→143px) with ease-in-out transition
+  - Smooth 50% expansion on hover (120px→180px) with ease-in-out transition
   - Pure CSS animations (0.5s ease-in-out) for jerk-free, fluid motion
 - **Enhanced Filter Buttons**: Added active/clicked states for all filter buttons
   - "All Items": Cyan (#00A8CC) active state
