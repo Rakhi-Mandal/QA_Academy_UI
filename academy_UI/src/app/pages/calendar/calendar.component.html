@@ -1,0 +1,257 @@
+<!-- calendar.component.html -->
+<div class="calendar-container">
+  <!-- Material Toolbar Header -->
+  <mat-toolbar class="app-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-title">
+          <h1>QA Learning Tracker</h1>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Progress Bar -->
+    <mat-card class="progress-card">
+      <mat-card-content>
+        <div class="progress-header">
+          <h3>Overall Progress</h3>
+          <span class="progress-percentage">{{ progressPercentage | number: '1.0-0' }}%</span>
+        </div>
+        <mat-progress-bar 
+          mode="determinate" 
+          [value]="progressPercentage"
+          color="primary">
+        </mat-progress-bar>
+        <p class="progress-text">{{ completedItems }} of {{ allItems.length }} items completed</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Stats Grid with Material Cards -->
+    <div class="stats-grid">
+      <div class="stats-row">
+        <mat-card class="stat-card stat-blue">
+          <mat-card-content>
+            <div class="stat-content-wrapper">
+              <div class="stat-icon blue">
+                <mat-icon>assignment</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-number">{{ totalAssignments }}</h2>
+                <p class="stat-label">Total Assessments</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card stat-yellow">
+          <mat-card-content>
+            <div class="stat-content-wrapper">
+              <div class="stat-icon yellow">
+                <mat-icon>emoji_events</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-number">{{ totalCertifications }}</h2>
+                <p class="stat-label">Professional Certs</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="stats-row">
+        <mat-card class="stat-card stat-completed">
+          <mat-card-content>
+            <div class="stat-content-wrapper">
+              <div class="stat-icon completed">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-number">{{ completedItems }}</h2>
+                <p class="stat-label">Items Finished</p>
+              </div>
+              <span class="stat-subtitle">Completed</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card stat-remaining">
+          <mat-card-content>
+            <div class="stat-content-wrapper">
+              <div class="stat-icon remaining">
+                <mat-icon>trending_up</mat-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-number">{{ remainingItems }}</h2>
+                <p class="stat-label">To Complete</p>
+              </div>
+              <span class="stat-subtitle">Remaining</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- View Controls with Material Buttons -->
+    <div class="controls-section">
+      <mat-button-toggle-group [(value)]="currentView" class="view-toggle">
+        <mat-button-toggle value="timeline" (click)="setView('timeline')">
+          <mat-icon>view_list</mat-icon>
+          Timeline View
+        </mat-button-toggle>
+        <mat-button-toggle value="calendar" (click)="setView('calendar')">
+          <mat-icon>calendar_month</mat-icon>
+          Calendar View
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+<div class="filter-buttons">
+  <mat-chip-listbox
+    [value]="filterType"
+    (change)="filterType = $event.value"
+    aria-label="Filter selection">
+
+    <mat-chip-option 
+      value="all"
+      [selected]="filterType === 'all'">
+      <mat-icon>view_module</mat-icon>
+      All Items ({{ allItems.length }})
+    </mat-chip-option>
+
+    <mat-chip-option 
+      value="assignments"
+      [selected]="filterType === 'assignments'"
+      class="chip-assignments">
+      <mat-icon>assignment</mat-icon>
+      Assignments ({{ totalAssignments }})
+    </mat-chip-option>
+
+    <mat-chip-option 
+      value="certifications"
+      [selected]="filterType === 'certifications'"
+      class="chip-certifications">
+      <mat-icon>emoji_events</mat-icon>
+      Certifications ({{ totalCertifications }})
+    </mat-chip-option>
+
+  </mat-chip-listbox>
+</div>
+
+    </div>
+
+    <!-- Timeline View with Material Cards -->
+    <div class="timeline-items" *ngIf="currentView === 'timeline'">
+      <mat-card 
+        *ngFor="let item of filteredItems; let i = index" 
+        class="timeline-item"
+        [class.completed]="item.completed"
+        [class.assignment-item]="item.type === 'assignment'"
+        [class.certification-item]="item.type === 'certification'"
+        matRipple>
+        
+        <mat-card-content>
+          <div class="item-wrapper">
+            <div class="item-icon-wrapper">
+              <div class="item-icon" 
+                   [class.assignment-icon]="item.type === 'assignment'" 
+                   [class.certification-icon]="item.type === 'certification'">
+                <mat-icon>{{ item.type === 'assignment' ? 'assignment' : 'emoji_events' }}</mat-icon>
+              </div>
+            </div>
+
+            <div class="item-content">
+              <h3 class="item-title">{{ item.name }}</h3>
+              <p class="item-subtitle" *ngIf="item.subtitle">{{ item.subtitle }}</p>
+              <div class="item-platform">
+                <mat-icon class="platform-icon">cloud</mat-icon>
+                <span>Platform: {{ item.platform }}</span>
+              </div>
+            </div>
+
+            <div class="item-right">
+              <mat-chip 
+                [class.assignment-badge]="item.type === 'assignment'" 
+                [class.certification-badge]="item.type === 'certification'">
+                <mat-icon>{{ item.type === 'assignment' ? 'assignment' : 'emoji_events' }}</mat-icon>
+                {{ item.type === 'assignment' ? 'Assignment' : 'Certification' }}
+              </mat-chip>
+              <div class="item-date">
+                <div class="date-main">{{ formatDate(item.date) }}</div>
+                <div class="date-day">{{ getDayName(item.date) }}</div>
+              </div>
+            </div>
+
+            <button 
+              mat-mini-fab 
+              [color]="item.completed ? 'accent' : 'primary'"
+              class="complete-btn" 
+              (click)="toggleComplete(item)"
+              [matTooltip]="item.completed ? 'Mark as incomplete' : 'Mark as complete'">
+              <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Calendar View with Material Card -->
+    <mat-card class="calendar-view" *ngIf="currentView === 'calendar'">
+      <mat-card-header class="calendar-header">
+        <button mat-icon-button (click)="previousMonth()" matTooltip="Previous Month">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <mat-card-title class="calendar-title">{{ currentMonthYear }}</mat-card-title>
+        <button mat-icon-button (click)="nextMonth()" matTooltip="Next Month">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="calendar-grid">
+          <div class="calendar-weekday">Sun</div>
+          <div class="calendar-weekday">Mon</div>
+          <div class="calendar-weekday">Tue</div>
+          <div class="calendar-weekday">Wed</div>
+          <div class="calendar-weekday">Thu</div>
+          <div class="calendar-weekday">Fri</div>
+          <div class="calendar-weekday">Sat</div>
+
+          <div 
+            *ngFor="let day of calendarDays" 
+            class="calendar-day"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class.has-items]="day.items.length > 0"
+            matRipple>
+            
+            <div class="day-number" 
+                 [matBadge]="day.items.length" 
+                 [matBadgeHidden]="day.items.length === 0" 
+                 matBadgeColor="accent"
+                 matBadgeSize="small">
+              {{ day.date.getDate() }}
+            </div>
+            
+            <div class="day-items" *ngIf="day.items.length > 0">
+              <mat-chip 
+                *ngFor="let item of day.items" 
+                class="calendar-item"
+                [class.assignment-calendar]="item.type === 'assignment'"
+                [class.certification-calendar]="item.type === 'certification'"
+                [class.completed]="item.completed"
+                (click)="toggleComplete(item)"
+                [matTooltip]="item.name">
+                <mat-icon class="calendar-item-icon">
+                  {{ item.type === 'assignment' ? 'assignment' : 'emoji_events' }}
+                </mat-icon>
+                <span class="calendar-item-name">{{ item.name.split(':')[0] }}</span>
+              </mat-chip>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </main>
+</div>
