@@ -5,6 +5,7 @@ FastAPI application entry point
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from routes import certification
 from routes import assessment
 from dotenv import load_dotenv
 import os
@@ -90,6 +91,13 @@ app.include_router(
     assessment.router,
     prefix="/api/assessments",
     tags=["Assessments"]
+)
+
+# Register Certification Routes
+app.include_router(
+    certification.router,
+    prefix="/api/certifications",
+    tags=["Certifications"]
 )
 
 if __name__ == "__main__":
