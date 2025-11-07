@@ -10,6 +10,14 @@ export enum CalendarStatus {
   UPCOMING = 'upcoming'
 }
 
+export interface FileAttachment {
+  name: string;
+  size: number;
+  mimeType: string;
+  data: string;
+  uploadedAt: Date;
+}
+
 export interface CalendarItem {
   id: string;
   title: string;
@@ -20,6 +28,11 @@ export interface CalendarItem {
   tools?: string[];
   platform?: string;
   category?: string;
+  isCompleted?: boolean;
+  completedAt?: Date | null;
+  score?: number | null;
+  attachments?: FileAttachment[];
+  submissionNotes?: string | null;
 }
 
 export interface AssessmentItem extends CalendarItem {

@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate, query, stagger, keyframes, state } from '@angular/animations';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CalendarDataService } from '../../shared/services/calendar-data.service';
 import { CalendarItem, CalendarStats } from '../../shared/models/calendar.models';
 import { Observable } from 'rxjs';
+import { FormSubmissionDialogComponent, SubmissionResult } from '../../shared/components/form-submission-dialog/form-submission-dialog.component';
 
 interface CalendarDay {
   date: Date;
@@ -16,7 +18,7 @@ interface CalendarDay {
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
   animations: [
@@ -104,7 +106,10 @@ export class CalendarComponent implements OnInit {
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   allItems: CalendarItem[] = [];
 
-  constructor(private calendarService: CalendarDataService) {}
+  constructor(
+    private calendarService: CalendarDataService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -268,5 +273,28 @@ export class CalendarComponent implements OnInit {
 
   trackByItemId(index: number, item: CalendarItem): string {
     return item.id;
+  }
+
+  openSubmissionDialog(item: CalendarItem): void {
+    if (item.isCompleted) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(FormSubmissionDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { item },
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe((result: SubmissionResult | undefined) => {
+      if (result) {
+        this.calendarService.markCompleted(item.id, {
+          score: result.score,
+          attachments: result.attachments,
+          submissionNotes: result.submissionNotes
+        });
+      }
+    });
   }
 }

@@ -1,0 +1,85 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Submit {{ data.item.title }}</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="submissionForm">
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Marks Secured (0-100)</mat-label>
+          <input 
+            matInput 
+            type="number" 
+            formControlName="score"
+            min="0"
+            max="100"
+            placeholder="Enter marks obtained">
+          <mat-error *ngIf="submissionForm.get('score')?.hasError('min')">
+            Score must be at least 0
+          </mat-error>
+          <mat-error *ngIf="submissionForm.get('score')?.hasError('max')">
+            Score cannot exceed 100
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <label class="file-upload-label">Upload Document</label>
+        <div class="file-upload-area">
+          <input 
+            type="file" 
+            id="fileInput" 
+            (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            hidden>
+          <button 
+            type="button" 
+            mat-raised-button 
+            color="primary"
+            (click)="fileInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            Choose File
+          </button>
+          <input #fileInput type="file" hidden (change)="onFileSelected($event)" 
+                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+          <p class="file-hint">PDF, DOC, DOCX, JPG, PNG (Max 5MB)</p>
+        </div>
+
+        <div class="uploaded-files" *ngIf="uploadedFiles.length > 0">
+          <div class="file-item" *ngFor="let file of uploadedFiles; let i = index">
+            <mat-icon class="file-icon">insert_drive_file</mat-icon>
+            <div class="file-info">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="file-size">{{ formatFileSize(file.size) }}</span>
+            </div>
+            <button type="button" mat-icon-button (click)="removeFile(i)" class="remove-btn">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Additional Notes (Optional)</mat-label>
+          <textarea 
+            matInput 
+            formControlName="submissionNotes"
+            rows="4"
+            placeholder="Add any additional information..."></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">Cancel</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()"
+      type="button"
+      [disabled]="!submissionForm.valid && uploadedFiles.length === 0">
+      Submit
+    </button>
+  </mat-dialog-actions>
+</div>

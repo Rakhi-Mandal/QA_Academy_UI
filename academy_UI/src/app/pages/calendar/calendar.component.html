@@ -163,35 +163,35 @@
           [class.certification-card]="item.type === 'certification'"
           [class.bg-[#FFF9E6]]="item.type === 'certification'"
           [class.bg-white]="item.type !== 'certification'"
-          class="dark:bg-gray-800 border p-6 cursor-pointer"
+          class="dark:bg-gray-800 border p-4 cursor-pointer"
           [class.border-yellow-200]="item.type === 'certification'"
           [class.border-gray-200]="item.type !== 'certification'"
           @scaleIn>
           <div class="flex items-start justify-between card-content">
-            <div class="flex-1">
-              <div class="flex items-center gap-3 mb-3">
+            <div class="flex-1" [class.completed-item]="item.isCompleted">
+              <div class="flex items-center gap-2 mb-2">
                 <div 
                   [class.bg-yellow-100]="item.type === 'certification'"
                   [class.bg-blue-100]="item.type !== 'certification'"
-                  class="p-3 rounded-xl icon-rotate-hover">
-                  <svg *ngIf="item.type === 'assessment'" class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  class="p-2 rounded-xl icon-rotate-hover">
+                  <svg *ngIf="item.type === 'assessment'" class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                   </svg>
-                  <svg *ngIf="item.type === 'certification'" class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg *ngIf="item.type === 'certification'" class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ item.title }}</h3>
-                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ item.description }}</p>
+                  <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ item.title }}</h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{{ item.description }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="flex flex-col items-end gap-3 ml-6">
+            <div class="flex flex-col items-end gap-2 ml-4">
               <span
                 *ngIf="item.type === 'certification'"
-                class="px-4 py-1.5 rounded-full bg-[#FFA500] text-white text-xs font-semibold whitespace-nowrap flex items-center gap-1 badge-scale-hover">
+                class="px-3 py-1 rounded-full bg-[#FFA500] text-white text-xs font-semibold whitespace-nowrap flex items-center gap-1 badge-scale-hover">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                 </svg>
@@ -200,13 +200,21 @@
               <span
                 *ngIf="item.type === 'assessment'"
                 [ngClass]="getStatusClass(item.status)"
-                class="px-4 py-1.5 rounded-full text-white text-xs font-semibold whitespace-nowrap badge-scale-hover">
+                class="px-3 py-1 rounded-full text-white text-xs font-semibold whitespace-nowrap badge-scale-hover">
                 {{ getStatusText(item.status) }}
               </span>
               <div class="text-right">
-                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ formatDate(item.date) }}</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ getDayOfWeek(item.date) }}</p>
+                <p class="text-base font-bold text-gray-900 dark:text-white">{{ formatDate(item.date) }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">{{ getDayOfWeek(item.date) }}</p>
               </div>
+              <button
+                (click)="openSubmissionDialog(item)"
+                [disabled]="item.isCompleted"
+                [class.btn-completed]="item.isCompleted"
+                [class.btn-action]="!item.isCompleted"
+                class="action-button px-5 py-1.5 rounded-lg font-medium text-sm transition-all duration-300 shadow-sm hover:shadow-md">
+                {{ item.isCompleted ? 'Completed' : 'Submit' }}
+              </button>
             </div>
           </div>
         </div>
