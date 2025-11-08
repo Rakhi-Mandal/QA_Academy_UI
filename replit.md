@@ -64,7 +64,8 @@ academy_Backend/
   - Shares calendar data service for consistency
   - Independent component at `academy_UI/src/app/pages/employee-calendar/`
 - **Admin Calendar Component**: Streamlined view for administrative oversight
-  - No stats cards (removed completion/remaining counters)
+  - Stats cards showing only Assignments (19) and Certifications (12) counts
+  - No status badges (Assigned, Completed, Upcoming) on timeline cards
   - No submit buttons on assignment/certification cards
   - Read-only timeline and calendar grid views for tracking purposes
 - **Dynamic Sidebar Navigation**: Role-based menu items that switch based on current route

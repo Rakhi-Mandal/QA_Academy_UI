@@ -10,6 +10,51 @@
       </p>
     </div>
 
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" *ngIf="stats$ | async as stats" @listAnimation>
+      <!-- Assignments Card -->
+      <div class="bg-[#E1F3FF] dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-blue-100 dark:border-gray-700 hover:shadow-md transition-all duration-300">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Assignments
+            </p>
+            <p class="text-4xl font-bold text-[#0066CC]">{{ stats.totalAssignments }}</p>
+            <p class="text-xs text-gray-500 mt-1">Total Assessments</p>
+          </div>
+          <div class="bg-blue-200/50 p-4 rounded-xl">
+            <svg class="w-10 h-10 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certifications Card -->
+      <div class="bg-[#FFF4E1] dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-yellow-100 dark:border-gray-700 hover:shadow-md transition-all duration-300">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+              Certifications
+            </p>
+            <p class="text-4xl font-bold text-[#FFA500]">{{ stats.totalCertifications }}</p>
+            <p class="text-xs text-gray-500 mt-1">Professional Certs</p>
+          </div>
+          <div class="bg-yellow-200/50 p-4 rounded-xl">
+            <svg class="w-10 h-10 text-[#FFA500]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- View Toggle Buttons -->
     <div class="flex gap-2 mb-6" @slideIn>
       <button
@@ -102,20 +147,6 @@
             </div>
 
             <div class="flex flex-col items-end gap-2 ml-4">
-              <span
-                *ngIf="item.type === 'certification'"
-                class="px-3 py-1 rounded-full bg-[#FFA500] text-white text-xs font-semibold whitespace-nowrap flex items-center gap-1 badge-scale-hover">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                </svg>
-                Certification
-              </span>
-              <span
-                *ngIf="item.type === 'assessment'"
-                [ngClass]="getStatusClass(item.status)"
-                class="px-3 py-1 rounded-full text-white text-xs font-semibold whitespace-nowrap badge-scale-hover">
-                {{ getStatusText(item.status) }}
-              </span>
               <div class="text-right">
                 <p class="text-base font-bold text-gray-900 dark:text-white">{{ formatDate(item.date) }}</p>
                 <p class="text-xs text-gray-600 dark:text-gray-400">{{ getDayOfWeek(item.date) }}</p>
