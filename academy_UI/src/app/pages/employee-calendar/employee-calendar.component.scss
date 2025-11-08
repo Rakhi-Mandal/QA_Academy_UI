@@ -1,0 +1,198 @@
+:host {
+  display: block;
+}
+
+.calendar-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    transition: all 0.5s ease-in-out;
+    z-index: 0;
+  }
+
+  &.assessment-card::before {
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.08) 100%);
+  }
+
+  &.certification-card::before {
+    background: linear-gradient(135deg, rgba(255, 165, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
+  }
+
+  &:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+
+    &::before {
+      width: 180px;
+      height: 180px;
+      top: -90px;
+      right: -90px;
+    }
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.filter-button {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  
+  // Smooth transitions for all properties
+  transition-property: background-color, color, border-color, box-shadow, transform;
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 80%;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &.active {
+    &::after {
+      transform: translateX(-50%) scaleX(1);
+    }
+  }
+
+  &.all-active {
+    background-color: #00A8CC;
+    color: white;
+    border-color: #00A8CC;
+
+    &::after {
+      background: white;
+    }
+  }
+
+  &.assessment-active {
+    background-color: #0066CC;
+    color: white;
+    border-color: #0066CC;
+
+    &::after {
+      background: white;
+    }
+  }
+
+  &.certification-active {
+    background-color: #FFA500;
+    color: white;
+    border-color: #FFA500;
+
+    &::after {
+      background: white;
+    }
+  }
+
+  &.inactive {
+    background-color: white;
+    color: #374151;
+    border-color: #D1D5DB;
+
+    &::after {
+      background: currentColor;
+    }
+  }
+}
+
+.icon-rotate-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-card:hover .icon-rotate-hover {
+  transform: rotate(0deg);
+}
+
+.badge-scale-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.badge-scale-hover:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.completed-item {
+  h3, p {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+}
+
+.action-button {
+  &.btn-action {
+    background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+    color: white;
+    border: none;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  &.btn-completed {
+    background: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+    border: 1px solid #ccc;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-card,
+  .filter-button,
+  .icon-rotate-hover,
+  .badge-scale-hover {
+    transition: none;
+  }
+
+  .calendar-card::before {
+    transition: none;
+  }
+}
