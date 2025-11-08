@@ -220,7 +220,7 @@
 .table-container {
   background: white;
   border-radius: 12px;
-  overflow-x: auto;
+  overflow-x: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   animation: fadeInScale 0.8s ease-out;
   transition: all 0.3s ease;
@@ -306,7 +306,7 @@
 
     &:hover {
       background: linear-gradient(90deg, rgba(227, 242, 253, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
-      transform: translateY(-2px) scale(1.002);
+      transform: translateY(-2px);
       box-shadow: 
         0 6px 16px rgba(2, 136, 209, 0.2),
         0 2px 8px rgba(0, 0, 0, 0.1),
@@ -324,11 +324,9 @@
 
       mat-cell {
         color: #0277bd;
-        transform: translateY(-1px);
         font-weight: 500;
 
         .employee-id {
-          transform: scale(1.12);
           font-weight: 700;
           color: #01579b;
           text-shadow: 0 1px 2px rgba(1, 87, 155, 0.1);
@@ -340,7 +338,7 @@
         }
 
         .designation-badge {
-          transform: scale(1.1) translateY(-3px);
+          transform: translateY(-2px);
           box-shadow: 0 6px 16px rgba(2, 136, 209, 0.35);
           background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
           color: #01579b;
@@ -351,7 +349,6 @@
           .progress-label {
             color: #0288d1;
             font-weight: 700;
-            transform: translateX(3px) scale(1.05);
           }
 
           .progress-bar {
@@ -367,7 +364,7 @@
         }
 
         .action-button {
-          transform: scale(1.25) rotate(12deg);
+          transform: rotate(12deg);
           color: #0288d1;
           background: rgba(2, 136, 209, 0.15);
 
