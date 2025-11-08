@@ -17,6 +17,13 @@ export const routes: Routes = [
     path:'',
     component:AppLayoutComponent,
     children:[
+      // Default redirect
+      {
+        path: '',
+        redirectTo: 'admin/track1',
+        pathMatch: 'full'
+      },
+      
       // Admin Routes
       {
         path: 'admin/track1',
@@ -118,11 +125,5 @@ export const routes: Routes = [
     path:'signup',
     component:SignUpComponent,
     title:'Sign Up | TailAdmin'
-  },
-  // Default redirect
-  {
-    path: '',
-    redirectTo: 'admin/track1',
-    pathMatch: 'full'
   }
 ];
