@@ -24,21 +24,57 @@ This is a free and open-source Angular 20 admin dashboard template built with An
 academy_UI/
 ├── src/
 │   ├── app/
-│   │   ├── pages/           # Page components (dashboard, auth, forms, etc.)
-│   │   ├── shared/          # Shared components, layout, services, pipes
-│   │   └── app.routes.ts    # Application routing
-│   ├── custom-theme.scss    # Material theme customization
-│   ├── styles.css           # Global styles
-│   └── main.ts              # Application entry point
-├── public/                  # Static assets (images, icons, logos)
-├── angular.json            # Angular workspace configuration
-└── package.json            # Dependencies and scripts
+│   │   ├── pages/
+│   │   │   ├── dashboard/
+│   │   │   │   └── fastrack/          # Fastrack Batch Employees table
+│   │   │   ├── calendar/              # Admin calendar component
+│   │   │   ├── employee-calendar/     # Employee calendar component (NEW)
+│   │   │   ├── profile/               # User profile component
+│   │   │   ├── auth-pages/            # Sign-in, Sign-up
+│   │   │   └── ...
+│   │   ├── shared/
+│   │   │   ├── layout/
+│   │   │   │   ├── app-sidebar/       # Dynamic role-based navigation (NEW)
+│   │   │   │   ├── app-header/
+│   │   │   │   └── app-layout/
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   │   └── calendar-data.service.ts
+│   │   │   └── models/
+│   │   └── app.routes.ts              # Role-based routing (UPDATED)
+│   ├── custom-theme.scss
+│   ├── styles.css
+│   └── main.ts
+├── public/
+├── angular.json
+└── package.json
 
 academy_Backend/
-└── notes.txt              # Backend notes (no actual backend implemented)
+└── notes.txt
 ```
 
 ## Recent Changes
+
+### Role-Based Navigation System (November 8, 2025)
+- **Dual-View Architecture**: Implemented separate admin and employee views with distinct navigation
+  - Admin view: Batches (FastTrack, Advanced Track, Mastery Program) + Calendar
+  - Employee view: My Profile + My Calendar
+- **Employee Calendar Component**: Created dedicated employee-calendar component
+  - Identical functionality to admin calendar but scoped for employee use
+  - Shares calendar data service for consistency
+  - Independent component at `academy_UI/src/app/pages/employee-calendar/`
+- **Dynamic Sidebar Navigation**: Role-based menu items that switch based on current route
+  - Automatically detects admin vs employee routes from URL
+  - Separate `adminNavItems` and `employeeNavItems` arrays
+  - URL detection logic: `/admin/*` shows admin menu, `/employee/*` shows employee menu
+- **Route Structure**: Organized paths with role prefixes for clear separation
+  - Admin routes: `/admin/track1`, `/admin/track2`, `/admin/track3`, `/admin/calendar`
+  - Employee routes: `/employee/profile`, `/employee/calendar`
+  - Legacy route redirects for backward compatibility
+- **Updated Components**: 
+  - `app.routes.ts`: Added role-based routing with data attributes
+  - `app-sidebar.component.ts`: Dynamic navigation switching based on route detection
+  - Default route redirects to `/admin/track1`
 
 ### Calendar UI Enhancements (November 7, 2025)
 - **Compact Card Design**: Optimized timeline cards for professional, space-efficient layout
@@ -119,17 +155,18 @@ Configured for Replit autoscale deployment:
 - **Server**: http-server for static file serving
 
 ## Features
-- 1 unique ecommerce dashboard
+- **Role-Based Views**: Separate admin and employee interfaces with distinct navigation
+- **Admin Dashboard**: Batch management (FastTrack, Advanced Track, Mastery Program) + Calendar
+- **Employee Dashboard**: Personal profile + Personal calendar for assessments & certifications
 - 100+ UI elements and components
 - Authentication pages (sign-in, sign-up)
-- Multiple dashboard layouts (FastTrack, Advanced Track, Mastery Program)
 - Charts and data visualization (bar, line charts)
 - Form elements and components
 - Dark mode support
 - Responsive design
 - Material Design components
 - Profile management
-- Employee management dialogs
+- Employee management with advanced table features (hover animations, tooltips, filtering)
 
 ## Notes
 - The `academy_Backend/` folder only contains a notes.txt file with dependency info
