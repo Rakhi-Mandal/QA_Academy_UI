@@ -282,7 +282,6 @@
     cursor: pointer;
 
     &::before {
-      content: '';
       position: absolute;
       left: 0;
       top: 0;
@@ -295,7 +294,6 @@
     }
 
     &::after {
-      content: '';
       position: absolute;
       right: 0;
       top: 0;
