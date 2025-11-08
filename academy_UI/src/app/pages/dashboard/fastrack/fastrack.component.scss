@@ -260,7 +260,7 @@
     color: #495057;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 14px 12px;
+    padding: 14px 8px;
     border-bottom: none;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -388,10 +388,9 @@
   }
 
   mat-cell {
-    padding: 14px 12px;
-    font-size: 14px;
+    padding: 14px 8px;
+    font-size: 13px;
     color: #212529;
-    font-weight: 500;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     text-overflow: ellipsis;
