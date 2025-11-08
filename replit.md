@@ -60,9 +60,13 @@ academy_Backend/
   - Admin view: Batches (FastTrack, Advanced Track, Mastery Program) + Calendar
   - Employee view: My Profile + My Calendar
 - **Employee Calendar Component**: Created dedicated employee-calendar component
-  - Identical functionality to admin calendar but scoped for employee use
+  - Full-featured with stats cards and submission functionality for employee self-tracking
   - Shares calendar data service for consistency
   - Independent component at `academy_UI/src/app/pages/employee-calendar/`
+- **Admin Calendar Component**: Streamlined view for administrative oversight
+  - No stats cards (removed completion/remaining counters)
+  - No submit buttons on assignment/certification cards
+  - Read-only timeline and calendar grid views for tracking purposes
 - **Dynamic Sidebar Navigation**: Role-based menu items that switch based on current route
   - Automatically detects admin vs employee routes from URL
   - Separate `adminNavItems` and `employeeNavItems` arrays
@@ -74,6 +78,7 @@ academy_Backend/
 - **Updated Components**: 
   - `app.routes.ts`: Added role-based routing with data attributes
   - `app-sidebar.component.ts`: Dynamic navigation switching based on route detection
+  - `calendar.component.html`: Removed stats cards and submit buttons for admin view
   - Default route redirects to `/admin/track1`
 
 ### Calendar UI Enhancements (November 7, 2025)
