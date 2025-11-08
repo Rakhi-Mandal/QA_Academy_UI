@@ -2,7 +2,6 @@
   display: block;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
 }
 
 .employee-container {
@@ -12,7 +11,6 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .header-section {
@@ -222,7 +220,7 @@
 .table-container {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   animation: fadeInScale 0.8s ease-out;
   transition: all 0.3s ease;
