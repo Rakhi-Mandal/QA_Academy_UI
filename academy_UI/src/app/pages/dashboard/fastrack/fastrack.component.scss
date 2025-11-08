@@ -604,40 +604,51 @@ mat-paginator {
   }
 
   .mat-mdc-option {
-    padding: 12px 16px;
+    padding: 12px 16px 12px 44px;
     min-height: 48px;
     font-size: 15px;
-    color: #374151;
+    color: #1f2937;
     transition: all 0.2s ease;
     position: relative;
 
+    .mat-pseudo-checkbox,
+    .mat-mdc-option-pseudo-checkbox,
+    .mdc-list-item__start,
+    .mdc-list-item__end {
+      display: none !important;
+    }
+
     &:hover {
-      background: #f3f4f6;
+      background: #f9fafb;
     }
 
     &.mat-mdc-option-active,
     &.mdc-list-item--selected {
-      background: #cffafe !important;
-      color: #0e7490;
+      background: #fcd34d !important;
+      color: #1f2937;
       font-weight: 500;
+      border-radius: 6px;
 
       .mdc-list-item__primary-text {
-        color: #0e7490;
+        color: #1f2937 !important;
       }
 
-      &::after {
+      &::before {
         content: '✓';
         position: absolute;
-        right: 16px;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
         font-size: 18px;
-        font-weight: 600;
-        color: #0e7490;
+        font-weight: 700;
+        color: #1f2937;
       }
     }
 
     .mdc-list-item__primary-text {
       font-size: 15px;
       line-height: 1.5;
+      color: inherit;
     }
   }
 
