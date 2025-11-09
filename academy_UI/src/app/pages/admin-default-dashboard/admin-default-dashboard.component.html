@@ -10,15 +10,11 @@
     <div class="stat-card" *ngFor="let card of statCards">
       <div class="stat-card-content">
         <div class="stat-icon-wrapper" [ngClass]="card.iconBg">
-          <div class="stat-icon" [innerHTML]="card.icon"></div>
+          <div class="stat-icon" [innerHTML]="card.icon | safeHtml"></div>
         </div>
         <div class="stat-details">
           <p class="stat-label">{{ card.title }}</p>
           <h3 class="stat-value">{{ card.value }}</h3>
-          <div class="stat-trend" [class.trend-up]="card.trend === 'up'">
-            <span class="trend-percentage">{{ card.percentage }}</span>
-            <span class="trend-label">vs last month</span>
-          </div>
         </div>
       </div>
     </div>
@@ -34,7 +30,7 @@
       <div class="activity-list">
         <div class="activity-item" *ngFor="let activity of recentActivities">
           <div class="activity-icon-wrapper">
-            <div class="activity-icon" [innerHTML]="activity.icon"></div>
+            <div class="activity-icon" [innerHTML]="activity.icon | safeHtml"></div>
           </div>
           <div class="activity-content">
             <p class="activity-text">

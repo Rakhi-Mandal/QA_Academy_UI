@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { SafeHtmlPipe } from '../../shared/pipe/safe-html.pipe';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -40,7 +41,7 @@ interface TopPerformer {
 
 @Component({
   selector: 'app-admin-default-dashboard',
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, NgApexchartsModule, SafeHtmlPipe],
   templateUrl: './admin-default-dashboard.component.html',
   styleUrl: './admin-default-dashboard.component.scss',
   animations: [
