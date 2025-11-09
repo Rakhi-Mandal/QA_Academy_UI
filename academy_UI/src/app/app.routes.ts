@@ -10,6 +10,7 @@ import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { FastrackComponent } from './pages/dashboard/fastrack/fastrack.component';
 import { CalendarComponent } from './pages/calendar/calendar.component';
 import { EmployeeCalendarComponent } from './pages/employee-calendar/employee-calendar.component';
+import { AdminDefaultDashboardComponent } from './pages/admin-default-dashboard/admin-default-dashboard.component';
 
 
 export const routes: Routes = [
@@ -20,11 +21,17 @@ export const routes: Routes = [
       // Default redirect
       {
         path: '',
-        redirectTo: 'admin/track1',
+        redirectTo: 'admin/dashboard',
         pathMatch: 'full'
       },
       
       // Admin Routes
+      {
+        path: 'admin/dashboard',
+        component: AdminDefaultDashboardComponent,
+        title: 'Dashboard Overview | Admin Dashboard',
+        data: { role: 'admin' }
+      },
       {
         path: 'admin/track1',
         component: FastrackComponent,
