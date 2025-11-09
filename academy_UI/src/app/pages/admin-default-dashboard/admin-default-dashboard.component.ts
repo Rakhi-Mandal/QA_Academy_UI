@@ -78,8 +78,8 @@ export class AdminDefaultDashboardComponent implements OnInit {
       trend: 'up'
     },
     {
-      title: 'Avg Performance',
-      value: '87%',
+      title: 'Recent Activity',
+      value: 28,
       icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
       iconBg: 'bg-green-50',
       percentage: '+5%',
@@ -94,9 +94,9 @@ export class AdminDefaultDashboardComponent implements OnInit {
       trend: 'up'
     },
     {
-      title: 'Active Projects',
-      value: 56,
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
+      title: 'Active Batches',
+      value: 3,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
       iconBg: 'bg-purple-50',
       percentage: '+3%',
       trend: 'up'

@@ -5,8 +5,8 @@ This is a free and open-source Angular 20 admin dashboard template built with An
 
 ## Project Status
 - **Current State**: Fully set up and running in Replit environment
-- **Last Updated**: November 7, 2025
-- **Branch**: main (feature/updatedEmployee branch requested but not found in repository)
+- **Last Updated**: November 9, 2025
+- **Branch**: main
 
 ## Architecture
 
@@ -25,10 +25,11 @@ academy_UI/
 ├── src/
 │   ├── app/
 │   │   ├── pages/
+│   │   │   ├── admin-default-dashboard/  # Admin default dashboard (NEW)
 │   │   │   ├── dashboard/
 │   │   │   │   └── fastrack/          # Fastrack Batch Employees table
 │   │   │   ├── calendar/              # Admin calendar component
-│   │   │   ├── employee-calendar/     # Employee calendar component (NEW)
+│   │   │   ├── employee-calendar/     # Employee calendar component
 │   │   │   ├── profile/               # User profile component
 │   │   │   ├── auth-pages/            # Sign-in, Sign-up
 │   │   │   └── ...
@@ -55,6 +56,45 @@ academy_Backend/
 
 ## Recent Changes
 
+### Admin Default Dashboard (November 9, 2025)
+- **New Default Admin View**: Created comprehensive admin-default-dashboard component
+  - Replaces batch table as the landing page for admin users
+  - Default route now redirects to `/admin/dashboard` instead of `/admin/track1`
+- **Stats Cards Section**: Four key metrics with icons, values, and trend indicators
+  - Total Employees: 1,234 employees (+12% vs last month)
+  - Recent Activity: 28 activities (+5% vs last month)
+  - Certifications: 432 certifications (+18% vs last month)
+  - Active Batches: 3 batches (+3% vs last month)
+  - Gradient background icons with hover animations
+- **Recent Activity Timeline**: Real-time feed of employee activities
+  - Shows 4 most recent activities with employee names, actions, and timestamps
+  - Activities include: certification completions, assessment starts, score achievements, project joins
+  - Blue icon badges with hover effects
+- **Top Performers Section**: Leaderboard of top 4 performing employees
+  - Display includes name, department, score percentage, and emoji badges (🏆, 🥈, 🥉, ⭐)
+  - Hover effects with horizontal slide animation
+  - Scores: 98%, 95%, 93%, 91%
+- **Employee Distribution Chart**: ApexCharts horizontal bar chart
+  - Shows distribution across 6 designations (QA Engineer, Test Lead, Automation Engineer, QA Analyst, SDET, Manual Tester)
+  - Data: 45, 32, 28, 18, 15, 12 employees respectively
+  - Professional chart styling with Outfit font family
+- **Quick Actions Panel**: Three action buttons for common admin tasks
+  - Add Employee: Blue gradient with user+ icon
+  - Add Certification: Yellow gradient with layers icon
+  - Add Assignment: Green gradient with document icon
+  - Hover effects with horizontal slide and shadow enhancement
+- **Responsive Layout**: CSS Grid-based layout with proper breakpoints
+  - Stats grid: 4 columns on desktop, auto-fit on mobile
+  - Content grid: 2 columns for Recent Activity and Top Performers
+  - Bottom grid: 2:1 ratio for Chart and Quick Actions
+- **Animations**: Smooth fade-in and stagger animations using Angular animations
+  - fadeInUp animation for page entry
+  - staggerFade animation for stat cards (80ms stagger delay)
+  - Cubic-bezier easing for professional feel
+- **Updated Navigation**: Added "Dashboard" as first item in admin sidebar menu
+  - Dashboard icon uses grid/squares SVG
+  - Positioned before "Batches" menu group
+
 ### Role-Based Navigation System (November 8, 2025)
 - **Dual-View Architecture**: Implemented separate admin and employee views with distinct navigation
   - Admin view: Batches (FastTrack, Advanced Track, Mastery Program) + Calendar
@@ -73,14 +113,14 @@ academy_Backend/
   - Separate `adminNavItems` and `employeeNavItems` arrays
   - URL detection logic: `/admin/*` shows admin menu, `/employee/*` shows employee menu
 - **Route Structure**: Organized paths with role prefixes for clear separation
-  - Admin routes: `/admin/track1`, `/admin/track2`, `/admin/track3`, `/admin/calendar`
+  - Admin routes: `/admin/dashboard`, `/admin/track1`, `/admin/track2`, `/admin/track3`, `/admin/calendar`
   - Employee routes: `/employee/profile`, `/employee/calendar`
   - Legacy route redirects for backward compatibility
 - **Updated Components**: 
   - `app.routes.ts`: Added role-based routing with data attributes
   - `app-sidebar.component.ts`: Dynamic navigation switching based on route detection
   - `calendar.component.html`: Removed stats cards and submit buttons for admin view
-  - Default route redirects to `/admin/track1`
+  - Default route redirects to `/admin/dashboard`
 
 ### Calendar UI Enhancements (November 7, 2025)
 - **Compact Card Design**: Optimized timeline cards for professional, space-efficient layout
