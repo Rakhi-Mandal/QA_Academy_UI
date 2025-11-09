@@ -13,26 +13,26 @@
   <ng-container *ngIf="employeeData; else notFound">
     <!-- Basic Info -->
     <div class="grid grid-cols-2 gap-4 mb-4">
-      <div><strong>ID:</strong> {{ employeeData?.employeeId }}</div>
-      <div><strong>Name:</strong> {{ employeeData?.name }}</div>
-      <div><strong>Email:</strong> {{ employeeData?.email }}</div>
-      <div><strong>Designation:</strong> {{ employeeData?.designation }}</div>
-      <div><strong>Manager:</strong> {{ employeeData?.manager }}</div>
-      <div><strong>Joining Date:</strong> {{ employeeData?.joiningDate | date }}</div>
+      <div><strong>ID:</strong> {{ employeeData.employeeId }}</div>
+      <div><strong>Name:</strong> {{ employeeData.name }}</div>
+      <div><strong>Email:</strong> {{ employeeData.email }}</div>
+      <div><strong>Designation:</strong> {{ employeeData.designation }}</div>
+      <div><strong>Manager:</strong> {{ employeeData.manager }}</div>
+      <div><strong>Joining Date:</strong> {{ employeeData.joiningDate | date }}</div>
     </div>
 
     <!-- Combined Progress Bars -->
     <div class="grid grid-cols-2 gap-6 mt-4">
       <div>
         <h3 class="font-medium mb-2">Overall Assessment Progress</h3>
-        <mat-progress-bar mode="determinate" [value]="employeeData?.assessmentProgress"></mat-progress-bar>
-        <p class="text-sm mt-1">{{ employeeData?.assessmentProgress }}%</p>
+        <mat-progress-bar mode="determinate" [value]="employeeData.assessmentProgress"></mat-progress-bar>
+        <p class="text-sm mt-1">{{ employeeData.assessmentProgress }}%</p>
       </div>
 
       <div>
         <h3 class="font-medium mb-2">Overall Certification Progress</h3>
-        <mat-progress-bar mode="determinate" color="accent" [value]="employeeData?.certificationProgress"></mat-progress-bar>
-        <p class="text-sm mt-1">{{ employeeData?.certificationProgress }}%</p>
+        <mat-progress-bar mode="determinate" color="accent" [value]="employeeData.certificationProgress"></mat-progress-bar>
+        <p class="text-sm mt-1">{{ employeeData.certificationProgress }}%</p>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
           Assessments
         </h3>
         <table class="w-full border-collapse text-sm">
-          <tr *ngFor="let a of employeeData?.assessments" class="border-b border-gray-300 dark:border-gray-700">
+          <tr *ngFor="let a of employeeData.assessments" class="border-b border-gray-300 dark:border-gray-700">
             <td class="py-2">{{ a.name }}</td>
             <td class="text-right font-medium">{{ a.score }}%</td>
           </tr>

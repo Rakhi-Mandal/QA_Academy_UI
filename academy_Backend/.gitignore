@@ -1,0 +1,40 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Uploaded Files (keep folder structure)
+uploads/assessments/*
+uploads/certifications/*
+!uploads/assessments/.gitkeep
+!uploads/certifications/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Personal notes
+notes.txt
