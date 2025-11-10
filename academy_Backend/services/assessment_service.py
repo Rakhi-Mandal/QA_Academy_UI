@@ -102,7 +102,6 @@ def create_assessment(assessment_data: AssessmentCreate) -> Dict:
         success = assessment_model.create_assessment(
             assessment_id=assessment_data.assessment_id,
             name=assessment_data.name,
-            scheduled_date=assessment_data.scheduled_date.isoformat() if assessment_data.scheduled_date else None,
             link=assessment_data.link
         )
         
@@ -151,7 +150,6 @@ def update_assessment(assessment_id: str, assessment_data: AssessmentUpdate) -> 
         success = assessment_model.update_assessment(
             assessment_id=assessment_id,
             name=assessment_data.name,
-            scheduled_date=assessment_data.scheduled_date.isoformat() if assessment_data.scheduled_date else None,
             link=assessment_data.link
         )
         
