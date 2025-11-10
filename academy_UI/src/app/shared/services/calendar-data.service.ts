@@ -27,12 +27,26 @@ export class CalendarDataService {
   private assessmentsSubject = new BehaviorSubject<AssessmentItem[]>(this.loadAssessments());
   private certificationsSubject = new BehaviorSubject<CertificationItem[]>(this.loadCertifications());
 
-  getAssessments$(): Observable<AssessmentItem[]> {
-    return this.assessmentsSubject.asObservable();
+  getAssessments$(employeeId?: string): Observable<AssessmentItem[]> {
+    return this.assessmentsSubject.asObservable().pipe(
+      map(assessments => {
+        if (!employeeId) {
+          return assessments;
+        }
+        return assessments.filter(a => !a.assignedTo || a.assignedTo === employeeId);
+      })
+    );
   }
 
-  getCertifications$(): Observable<CertificationItem[]> {
-    return this.certificationsSubject.asObservable();
+  getCertifications$(employeeId?: string): Observable<CertificationItem[]> {
+    return this.certificationsSubject.asObservable().pipe(
+      map(certifications => {
+        if (!employeeId) {
+          return certifications;
+        }
+        return certifications.filter(c => !c.assignedTo || c.assignedTo === employeeId);
+      })
+    );
   }
 
   refreshData(): void {
@@ -40,10 +54,10 @@ export class CalendarDataService {
     this.certificationsSubject.next([...this.certificationsSubject.value]);
   }
 
-  getAllCalendarItems$(): Observable<CalendarItem[]> {
+  getAllCalendarItems$(employeeId?: string): Observable<CalendarItem[]> {
     return combineLatest([
-      this.assessmentsSubject.asObservable(),
-      this.certificationsSubject.asObservable()
+      this.getAssessments$(employeeId),
+      this.getCertifications$(employeeId)
     ]).pipe(
       map(([assessments, certifications]) => {
         const allItems: CalendarItem[] = [...assessments, ...certifications];
@@ -52,10 +66,10 @@ export class CalendarDataService {
     );
   }
 
-  getCalendarStats$(): Observable<CalendarStats> {
+  getCalendarStats$(employeeId?: string): Observable<CalendarStats> {
     return combineLatest([
-      this.getAssessments$(),
-      this.getCertifications$()
+      this.getAssessments$(employeeId),
+      this.getCertifications$(employeeId)
     ]).pipe(
       map(([assessments, certifications]) => {
         const allItems = [...assessments, ...certifications];
@@ -71,8 +85,8 @@ export class CalendarDataService {
     );
   }
 
-  getFilteredItems$(filterType: 'all' | 'assessments' | 'certifications'): Observable<CalendarItem[]> {
-    return this.getAllCalendarItems$().pipe(
+  getFilteredItems$(filterType: 'all' | 'assessments' | 'certifications', employeeId?: string): Observable<CalendarItem[]> {
+    return this.getAllCalendarItems$(employeeId).pipe(
       map(items => {
         if (filterType === 'assessments') {
           return items.filter(item => item.type === CalendarItemType.ASSESSMENT);

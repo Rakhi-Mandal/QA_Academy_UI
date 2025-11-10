@@ -10,6 +10,7 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
   private readonly STORAGE_KEY = 'currentUser';
+  private readonly USERS_KEY = 'registeredUsers';
 
   constructor(private router: Router) {
     const storedUser = localStorage.getItem(this.STORAGE_KEY);
@@ -17,6 +18,55 @@ export class AuthService {
       storedUser ? JSON.parse(storedUser) : null
     );
     this.currentUser = this.currentUserSubject.asObservable();
+    
+    this.initializeDemoUsers();
+  }
+
+  private initializeDemoUsers(): void {
+    const existingUsers = this.getAllUsers();
+    if (existingUsers.length === 0) {
+      const demoUsers: Array<User & { password: string }> = [
+        {
+          id: '1',
+          email: 'admin@academy.com',
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'admin',
+          password: 'password123'
+        },
+        {
+          id: '2',
+          email: 'employee@academy.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'employee',
+          employeeId: 'EMP001',
+          department: 'Engineering',
+          designation: 'QA Engineer',
+          manager: 'Sarah Wilson',
+          password: 'password123'
+        }
+      ];
+      localStorage.setItem(this.USERS_KEY, JSON.stringify(demoUsers));
+    }
+  }
+
+  private getAllUsers(): Array<User & { password: string }> {
+    const usersJson = localStorage.getItem(this.USERS_KEY);
+    return usersJson ? JSON.parse(usersJson) : [];
+  }
+
+  private saveUser(user: User & { password: string }): void {
+    const users = this.getAllUsers();
+    const existingIndex = users.findIndex(u => u.email === user.email);
+    
+    if (existingIndex >= 0) {
+      users[existingIndex] = user;
+    } else {
+      users.push(user);
+    }
+    
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
   }
 
   public get currentUserValue(): User | null {
@@ -37,38 +87,16 @@ export class AuthService {
 
   login(credentials: LoginCredentials): Observable<boolean> {
     return new Observable(observer => {
-      // Simulate API call - Replace with actual HTTP call
       setTimeout(() => {
-        // Demo users for testing
-        const demoUsers: User[] = [
-          {
-            id: '1',
-            email: 'admin@academy.com',
-            firstName: 'Admin',
-            lastName: 'User',
-            role: 'admin'
-          },
-          {
-            id: '2',
-            email: 'employee@academy.com',
-            firstName: 'John',
-            lastName: 'Doe',
-            role: 'employee',
-            employeeId: 'EMP001',
-            department: 'Engineering',
-            designation: 'QA Engineer',
-            manager: 'Sarah Wilson'
-          }
-        ];
+        const users = this.getAllUsers();
+        const user = users.find(u => u.email === credentials.email);
 
-        const user = demoUsers.find(u => u.email === credentials.email);
+        if (user && user.password === credentials.password) {
+          const { password, ...userWithoutPassword } = user;
+          
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userWithoutPassword));
+          this.currentUserSubject.next(userWithoutPassword);
 
-        if (user && credentials.password === 'password123') {
-          // Store user in localStorage
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-          this.currentUserSubject.next(user);
-
-          // Redirect based on role
           if (user.role === 'admin') {
             this.router.navigate(['/admin/dashboard']);
           } else {
@@ -84,11 +112,17 @@ export class AuthService {
     });
   }
 
-  signup(signupData: SignupData): Observable<boolean> {
+  signup(signupData: SignupData & { password: string }): Observable<boolean> {
     return new Observable(observer => {
-      // Simulate API call - Replace with actual HTTP call
       setTimeout(() => {
-        const newUser: User = {
+        const users = this.getAllUsers();
+        
+        if (users.find(u => u.email === signupData.email)) {
+          observer.error({ message: 'Email already registered' });
+          return;
+        }
+
+        const newUser: User & { password: string } = {
           id: Date.now().toString(),
           email: signupData.email,
           firstName: signupData.firstName,
@@ -96,14 +130,16 @@ export class AuthService {
           role: signupData.role,
           employeeId: signupData.employeeId,
           department: signupData.department,
-          designation: signupData.designation
+          designation: signupData.designation,
+          password: signupData.password
         };
 
-        // Store user in localStorage
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newUser));
-        this.currentUserSubject.next(newUser);
+        this.saveUser(newUser);
 
-        // Redirect based on role
+        const { password, ...userWithoutPassword } = newUser;
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userWithoutPassword));
+        this.currentUserSubject.next(userWithoutPassword);
+
         if (newUser.role === 'admin') {
           this.router.navigate(['/admin/dashboard']);
         } else {
