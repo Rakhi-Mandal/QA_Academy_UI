@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import certification,assessment,certification_record
-from routes import assessment
+from routes import courses, course_record
 from routes import batch
 from routes import pod
 from dotenv import load_dotenv
@@ -19,6 +19,7 @@ from routes import employee
 # Create uploads directories if they don't exist
 os.makedirs("uploads/assessments", exist_ok=True)
 os.makedirs("uploads/certifications", exist_ok=True)
+os.makedirs("uploads/courses", exist_ok=True)
 
 load_dotenv()
 
@@ -42,28 +43,6 @@ app.add_middleware(
 
 # Mount uploads folder for file serving
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-# Import and register routers
-# from routes import batch, employee, assessment, certification, assessment_record, certification_record, file
-# app.include_router(batch.router, prefix="/api/batches", tags=["Batches"])
-# app.include_router(employee.router, prefix="/api/employees", tags=["Employees"])
-# app.include_router(assessment.router, prefix="/api/assessments", tags=["Assessments"])
-# app.include_router(certification.router, prefix="/api/certifications", tags=["Certifications"])
-# app.include_router(assessment_record.router, prefix="/api/assessment-records", tags=["Assessment Records"])
-# app.include_router(certification_record.router, prefix="/api/certification-records", tags=["Certification Records"])
-# app.include_router(file.router, prefix="/api/files", tags=["Files"])
-
-@app.get("/", tags=["Root"])
-def root():
-    """Root endpoint - API information"""
-    return {
-        "message": "QE Academy Backend API",
-        "status": "Running",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "redoc": "/redoc"
-    }
-
 
 # Register Assessment Routes
 app.include_router(
@@ -102,6 +81,20 @@ app.include_router(
 app.include_router(batch.router, prefix="/api/batches")
  
 app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
+
+# Register Course Routes
+app.include_router(
+    courses.router,
+    prefix="/api/coursess",
+    tags=["Courses"]
+)
+
+# Register Course Record Routes
+app.include_router(
+    course_record.router,
+    prefix="/api/course-records",
+    tags=["Course Records"]
+)
 
 if __name__ == "__main__":
     import uvicorn
