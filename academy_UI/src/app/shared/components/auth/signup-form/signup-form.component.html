@@ -1,24 +1,20 @@
 <div class="flex h-screen overflow-hidden">
   <!-- Left Side - Orange/Black Gradient with Illustration -->
-  <div class="hidden lg:flex lg:w-[35%] bg-gradient-to-br from-orange-500 via-orange-600 to-gray-900 relative items-center justify-center p-8">
-    <!-- Decorative Circles -->
+<div class="hidden lg:flex lg:w-[60%] bg-gradient-to-br from-orange-500 via-orange-300 to-orange-900 relative items-center justify-center p-8">
+      <!-- Decorative Circles -->
     <div class="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
     <div class="absolute bottom-40 right-20 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl"></div>
     
-    <div class="relative z-10 max-w-xs">
+    <div class="relative z-10 max-w-lg">
       <!-- Illustration -->
       <div class="mb-4 flex justify-center">
         <img 
           src="/login-illustration.png" 
           alt="Sign Up Illustration" 
-          class="w-full max-w-[220px] rounded-2xl"
+          class="w-full max-w-lg rounded-3xl"
         />
       </div>
       
-      <!-- Description Text -->
-      <p class="text-white/90 text-center text-sm leading-relaxed">
-        Create your account and start managing your company dashboard with ease
-      </p>
     </div>
   </div>
 
@@ -66,7 +62,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-xs font-medium text-gray-900 mb-1">
-              First Name <span class="text-red-500">*</span>
+               Name <span class="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -78,22 +74,6 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-medium text-gray-900 mb-1">
-              Last Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              [(ngModel)]="lname"
-              name="lname"
-              placeholder="Last name"
-              class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
-              required
-            />
-          </div>
-        </div>
-
-        <!-- Email Input -->
-        <div>
           <label class="block text-xs font-medium text-gray-900 mb-1">
             Email <span class="text-red-500">*</span>
           </label>
@@ -106,7 +86,7 @@
             required
           />
         </div>
-
+        </div>
         <!-- Password Input -->
         <div>
           <label class="block text-xs font-medium text-gray-900 mb-1">
