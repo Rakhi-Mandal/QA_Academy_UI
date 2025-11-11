@@ -1,16 +1,16 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
 
 
 class EmployeeBase(BaseModel):
+    pod_id: int
     employee_name: str
+    employee_id: str
     employee_email: EmailStr
     designation: str
-    batch_code: int
 
 
 class EmployeeCreate(EmployeeBase):
-    employee_id: str
+    user_id: int
 
 
 class EmployeeUpdate(EmployeeBase):

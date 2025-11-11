@@ -9,7 +9,6 @@ from services.employee_service import (
     service_delete_employee
 )
 
-# ✅ No prefix or tags here — they are handled in main.py
 router = APIRouter()
 
 
@@ -21,7 +20,7 @@ def get_all_employees():
 
 @router.get("/{employee_id}")
 def get_employee_by_id(employee_id: str):
-    """Get specific employee record"""
+    """Get specific employee record by Employee_ID"""
     return service_get_employee_by_id(employee_id)
 
 
@@ -31,7 +30,7 @@ def get_employees_by_batch(batch_code: int):
     return service_get_employees_by_batch(batch_code)
 
 
-@router.post("/")
+@router.post("/add")
 def create_employee(data: EmployeeCreate):
     """Create new employee"""
     return service_create_employee(data)
@@ -39,11 +38,12 @@ def create_employee(data: EmployeeCreate):
 
 @router.put("/{employee_id}")
 def update_employee(employee_id: str, data: EmployeeUpdate):
-    """Update existing employee record"""
+    """Update existing employee record by Employee_ID"""
     return service_update_employee(employee_id, data)
 
 
 @router.delete("/{employee_id}")
 def delete_employee(employee_id: str):
-    """Delete employee record"""
+    """Delete employee record by Employee_ID"""
     return service_delete_employee(employee_id)
+

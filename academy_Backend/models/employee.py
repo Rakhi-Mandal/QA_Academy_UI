@@ -3,16 +3,18 @@ from typing import List, Dict, Optional
 
 
 def get_all_employees() -> List[Dict]:
-    """Get all employee records"""
+    """Get all employee records with POD and Batch Code"""
     connection = get_db_connection()
     if not connection:
         return []
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code
-            FROM employee_record
-            ORDER BY Employee_Name
+            SELECT e.user_id, e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation,
+                   e.POD_ID, p.POD, p.Batch_Code
+            FROM employee_record e
+            LEFT JOIN pod p ON e.POD_ID = p.POD_ID
+            ORDER BY e.Employee_Name
         """
         cursor.execute(query)
         employees = cursor.fetchall()
@@ -26,16 +28,18 @@ def get_all_employees() -> List[Dict]:
 
 
 def get_employee_by_id(employee_id: str) -> Optional[Dict]:
-    """Get specific employee record"""
+    """Get specific employee record by Employee_ID"""
     connection = get_db_connection()
     if not connection:
         return None
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code
-            FROM employee_record
-            WHERE Employee_ID = %s
+            SELECT e.user_id, e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation,
+                   e.POD_ID, p.POD, p.Batch_Code
+            FROM employee_record e
+            LEFT JOIN pod p ON e.POD_ID = p.POD_ID
+            WHERE e.Employee_ID = %s
         """
         cursor.execute(query, (employee_id,))
         employee = cursor.fetchone()
@@ -49,16 +53,18 @@ def get_employee_by_id(employee_id: str) -> Optional[Dict]:
 
 
 def get_employees_by_batch(batch_code: int) -> List[Dict]:
-    """Get employees by batch code"""
+    """Get employees by Batch_Code (join pod and employee_record)"""
     connection = get_db_connection()
     if not connection:
         return []
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code
-            FROM employee_record
-            WHERE Batch_Code = %s
+            SELECT e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation,
+                   e.POD_ID, p.POD, p.Batch_Code
+            FROM employee_record e
+            INNER JOIN pod p ON e.POD_ID = p.POD_ID
+            WHERE p.Batch_Code = %s
         """
         cursor.execute(query, (batch_code,))
         employees = cursor.fetchall()
@@ -71,7 +77,7 @@ def get_employees_by_batch(batch_code: int) -> List[Dict]:
         close_db_connection(connection)
 
 
-def create_employee(employee_id: str, employee_name: str, employee_email: str, designation: str, batch_code: int) -> bool:
+def create_employee(user_id: int, pod_id: int, employee_name: str, employee_id: str, employee_email: str, designation: str) -> bool:
     """Create new employee record"""
     connection = get_db_connection()
     if not connection:
@@ -79,10 +85,10 @@ def create_employee(employee_id: str, employee_name: str, employee_email: str, d
     try:
         cursor = connection.cursor()
         query = """
-            INSERT INTO employee_record (Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO employee_record (user_id, POD_ID, Employee_Name, Employee_ID, Employee_Email, Designation)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(query, (employee_id, employee_name, employee_email, designation, batch_code))
+        cursor.execute(query, (user_id, pod_id, employee_name, employee_id, employee_email, designation))
         connection.commit()
         return True
     except Exception as e:
@@ -94,33 +100,27 @@ def create_employee(employee_id: str, employee_name: str, employee_email: str, d
         close_db_connection(connection)
 
 
-def update_employee(employee_id, employee_name, employee_email, designation, batch_code):
-    """Update an existing employee record"""
+def update_employee(employee_id: str, pod_id: int, employee_name: str, employee_email: str, designation: str) -> bool:
+    """Update existing employee record by Employee_ID"""
     connection = get_db_connection()
     if not connection:
         print("❌ Database connection failed in update_employee")
         return False
-
     try:
         cursor = connection.cursor()
         query = """
             UPDATE employee_record
-            SET Employee_Name = %s,
+            SET POD_ID = %s,
+                Employee_Name = %s,
                 Employee_Email = %s,
-                Designation = %s,
-                Batch_Code = %s
+                Designation = %s
             WHERE Employee_ID = %s
         """
-        print("🧠 Query:", query)
-        print("🧠 Values:", (employee_name, employee_email, designation, batch_code, employee_id))
-
-        cursor.execute(query, (employee_name, employee_email, designation, batch_code, employee_id))
+        cursor.execute(query, (pod_id, employee_name, employee_email, designation, employee_id))
         connection.commit()
-
-        print("✅ Rows affected:", cursor.rowcount)
         return cursor.rowcount > 0
     except Exception as e:
-        print("❌ Error in update_employee:", e)
+        print(f"❌ Error in update_employee: {e}")
         connection.rollback()
         return False
     finally:
@@ -129,7 +129,7 @@ def update_employee(employee_id, employee_name, employee_email, designation, bat
 
 
 def delete_employee(employee_id: str) -> bool:
-    """Delete employee record"""
+    """Delete employee record by Employee_ID"""
     connection = get_db_connection()
     if not connection:
         return False

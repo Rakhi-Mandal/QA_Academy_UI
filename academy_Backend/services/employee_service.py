@@ -34,11 +34,12 @@ def service_get_employees_by_batch(batch_code: int):
 
 def service_create_employee(data):
     success = create_employee(
-        data.employee_id,
+        data.user_id,
+        data.pod_id,
         data.employee_name,
+        data.employee_id,
         data.employee_email,
-        data.designation,
-        data.batch_code
+        data.designation
     )
     return {"success": success, "message": "Employee created successfully" if success else "Failed to create employee", "data": None}
 
@@ -46,14 +47,14 @@ def service_create_employee(data):
 def service_update_employee(employee_id, data):
     success = update_employee(
         employee_id,
+        data.pod_id,
         data.employee_name,
         data.employee_email,
-        data.designation,
-        data.batch_code
+        data.designation
     )
     return {"success": success, "message": "Employee updated successfully" if success else "Failed to update employee", "data": None}
 
 
-def service_delete_employee(employee_id):
+def service_delete_employee(employee_id: str):
     success = delete_employee(employee_id)
     return {"success": success, "message": "Employee deleted successfully" if success else "Failed to delete employee", "data": None}
