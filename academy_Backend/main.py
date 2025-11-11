@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import assessment
+from routes import batch
+from routes import pod
 from dotenv import load_dotenv
 import os
 from config import settings
@@ -80,6 +82,10 @@ app.include_router(
     prefix="/api/employees",
     tags=["Employees"]
 )
+
+app.include_router(batch.router, prefix="/api/batches")
+ 
+app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
 
 if __name__ == "__main__":
     import uvicorn
