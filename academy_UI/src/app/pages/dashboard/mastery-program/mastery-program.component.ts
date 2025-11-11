@@ -54,7 +54,7 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  selectedBatch = 1; // Default batch
+  selectedBatch = 3; // Default batch
   selectedDesignation = 'All';
   selectedAssessment = 'All';
   selectedCertification = 'All';

@@ -60,12 +60,7 @@ export class AdvancedTrackComponent implements OnInit, AfterViewInit {
   selectedCertification = 'All';
 
   ngOnInit() {
-   this.route.params.subscribe(params => {
-    const trackId = params['id'];
-    this.selectedBatch = trackId; // load data for that batch
     this.loadAllData();
-  });
-
   }
 
   ngAfterViewInit() {
