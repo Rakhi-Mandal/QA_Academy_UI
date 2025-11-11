@@ -174,3 +174,46 @@ def delete_record(record_id: int) -> bool:
     finally:
         cursor.close()
         close_db_connection(connection)
+
+def get_recent_records(limit: int = 2) -> list[dict]:
+    """Fetch the most recent assessment records, joining employee info"""
+    connection = get_db_connection()
+    if not connection:
+        print("❌ Database connection failed in get_recent_records()")
+        return []
+
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT 
+                ar.Record_ID,
+                ar.Upload_Time,
+                ar.Document,
+                ar.Mark_Secured,
+                ar.Assessment_ID,
+                ar.Employee_ID,
+                er.Employee_Name,
+                er.Designation
+            FROM assessment_record ar
+            LEFT JOIN employee_record er ON ar.Employee_ID = er.Employee_ID
+            ORDER BY ar.Upload_Time DESC
+            LIMIT %s
+        """
+        cursor.execute(query, (limit,))
+        records = cursor.fetchall()
+
+        # Convert datetime & decimal
+        for r in records:
+            if isinstance(r.get("Upload_Time"), (datetime.datetime, datetime.date)):
+                r["Upload_Time"] = r["Upload_Time"].isoformat()
+            if isinstance(r.get("Mark_Secured"), decimal.Decimal):
+                r["Mark_Secured"] = float(r["Mark_Secured"])
+
+        return records
+
+    except Exception as e:
+        print(f"💥 Error in get_recent_records: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_db_connection(connection)

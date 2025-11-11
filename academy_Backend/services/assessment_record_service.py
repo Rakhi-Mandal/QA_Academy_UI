@@ -85,3 +85,10 @@ def delete_record(record_id: int) -> Dict:
         return success_response(None, "Record deleted successfully", 200)
     except Exception as e:
         return error_response(f"Error deleting record: {str(e)}", 500)
+
+def get_recent_records(limit: int = 2):
+    try:
+        records = record_model.get_recent_records(limit)
+        return success_response(records, "Recent records fetched successfully", 200)
+    except Exception as e:
+        return error_response(f"Error fetching recent records: {str(e)}", 500)

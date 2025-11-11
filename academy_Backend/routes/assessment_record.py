@@ -1,13 +1,19 @@
+from database.connection import close_db_connection, get_db_connection
 from fastapi import APIRouter, Path, UploadFile, File, Form
 from schemas.assessment_record import AssessmentRecordCreate, AssessmentRecordUpdate
 from services import assessment_record_service
 import os
 from starlette.concurrency import run_in_threadpool
 from datetime import datetime
-from typing import Optional
+from typing import Dict, List, Optional
 
 router = APIRouter()
 
+# Static route first
+@router.get("/recent")
+def get_recent_records(limit: int = 2):
+    """Fetch the most recent assessment records (default: 2)"""
+    return assessment_record_service.get_recent_records(limit)
 
 @router.get("/")
 def get_all_records():
@@ -86,3 +92,10 @@ async def upload_assessment_document(
     )
 
     return assessment_record_service.create_record(record_data)
+
+
+# Parameterized route after
+@router.get("/{record_id}")
+def get_record_by_id(record_id: int = Path(..., description="Record ID")):
+    """Get specific assessment record"""
+    return assessment_record_service.get_record_by_id(record_id)
