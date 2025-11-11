@@ -96,7 +96,7 @@ def root():
 
 app.include_router(batch.router, prefix="/api/batches")
 
-app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
+# app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
 
 if __name__ == "__main__":
     import uvicorn

@@ -21,3 +21,13 @@ def get_all_batches(
     - List of all batches
     """
     return batch_service.get_all_batches(include_stats=include_stats)
+
+@router.get("/count")
+def get_batch_count():
+    """
+    Get total count of batches
+    
+    Returns:
+    - Total number of batches
+    """
+    return batch_service.get_batch_count()
