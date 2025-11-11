@@ -5,7 +5,8 @@ FastAPI application entry point
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routes import assessment, courses, course_record
+from routes import certification,assessment,certification_record
+from routes import courses, course_record
 from routes import batch
 from routes import pod
 from dotenv import load_dotenv
@@ -61,6 +62,21 @@ app.include_router(
     prefix="/api/employees",
     tags=["Employees"]
 )
+
+# Register Certification Routes
+app.include_router(
+    certification.router,
+    prefix="/api/certifications",
+    tags=["Certifications"]
+)
+ 
+# Register Certification Record Routes
+app.include_router(
+    certification_record.router,
+    prefix="/api/certification-records",
+    tags=["Certification Records"]
+)
+ 
 
 app.include_router(batch.router, prefix="/api/batches")
  
