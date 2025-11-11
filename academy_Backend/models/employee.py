@@ -49,16 +49,18 @@ def get_employee_by_id(employee_id: str) -> Optional[Dict]:
 
 
 def get_employees_by_batch(batch_code: int) -> List[Dict]:
-    """Get employees by batch code"""
+    """Get employees by Batch_Code (join pod and employee_record)"""
     connection = get_db_connection()
     if not connection:
         return []
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code
-            FROM employee_record
-            WHERE Batch_Code = %s
+            SELECT e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation,
+                   e.POD_ID, p.POD, p.Batch_Code
+            FROM employee_record e
+            INNER JOIN pod p ON e.POD_ID = p.POD_ID
+            WHERE p.Batch_Code = %s
         """
         cursor.execute(query, (batch_code,))
         employees = cursor.fetchall()
@@ -146,3 +148,110 @@ def delete_employee(employee_id: str) -> bool:
     finally:
         cursor.close()
         close_db_connection(connection)
+
+
+# ✅ FIXED CERTIFICATION QUERY
+def get_employee_certifications(employee_id: str) -> List[Dict]:
+    """Get all certifications for an employee"""
+    connection = get_db_connection()
+    if not connection:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT 
+                cr.Record_ID,
+                cr.Employee_ID,
+                cr.Certification_ID,
+                ct.Name AS Certification_Name,
+                cr.Mark_Secured
+            FROM certification_record cr
+            JOIN certification_table ct ON cr.Certification_ID = ct.Certification_ID
+            WHERE cr.Employee_ID = %s
+        """
+        print("🧠 Running get_employee_certifications for", employee_id)
+        cursor.execute(query, (employee_id,))
+        certifications = cursor.fetchall()
+        print("✅ certifications result:", certifications)
+        return certifications
+    except Exception as e:
+        print(f"Error in get_employee_certifications: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+# ✅ FIXED ASSESSMENT QUERY
+def get_employee_assessments(employee_id: str) -> List[Dict]:
+    """Get all assessments for an employee"""
+    connection = get_db_connection()
+    if not connection:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT 
+                ar.Record_ID,
+                ar.Employee_ID,
+                ar.Assessment_ID,
+                at.Name AS Assessment_Name,
+                ar.Mark_Secured
+            FROM assessment_record ar
+            JOIN assessment_table at ON ar.Assessment_ID = at.Assessment_ID
+            WHERE ar.Employee_ID = %s
+        """
+        print("🧠 Running get_employee_assessments for", employee_id)
+        cursor.execute(query, (employee_id,))
+        assessments = cursor.fetchall()
+        print("✅ assessments result:", assessments)
+        return assessments
+    except Exception as e:
+        print(f"Error in get_employee_assessments: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+def get_employee_courses(employee_id: str) -> List[Dict]:
+    """Get all courses for an employee"""
+    connection = get_db_connection()
+    if not connection:
+        return []
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT 
+                cor.Record_ID,
+                cor.Employee_ID,
+                cor.Course_ID,
+                ct.Name AS Course_Name
+            FROM courses_record cor
+            JOIN courses_table ct ON cor.Course_ID = ct.Courses_ID
+            WHERE cor.Employee_ID = %s
+        """
+        print(f"🧠 Running get_employee_courses for Employee_ID: {employee_id}")
+        cursor.execute(query, (employee_id,))
+        courses = cursor.fetchall()
+        print("✅ courses result:", courses)
+        return courses
+    except Exception as e:
+        print(f"❌ Error in get_employee_courses: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+
+def get_employee_all_records(employee_id: str) -> Dict:
+    """Get all records (certifications, assessments, courses) for an employee"""
+    return {
+        "certifications": get_employee_certifications(employee_id),
+        "assessments": get_employee_assessments(employee_id),
+        "courses": get_employee_courses(employee_id)
+    }

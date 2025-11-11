@@ -13,6 +13,8 @@ import { EmployeeCalendarComponent } from './pages/employee-calendar/employee-ca
 import { AdminDefaultDashboardComponent } from './pages/admin-default-dashboard/admin-default-dashboard.component';
 import { authGuard } from './shared/guards/auth.guard';
 import { adminGuard, employeeGuard } from './shared/guards/role.guard';
+import { AdvancedTrackComponent } from './pages/dashboard/advanced-track/advanced-track.component';
+import { MasteryProgramComponent } from './pages/dashboard/mastery-program/mastery-program.component';
 
 
 export const routes: Routes = [
@@ -45,14 +47,14 @@ export const routes: Routes = [
       },
       {
         path: 'admin/track2',
-        component: FastrackComponent,
+        component: AdvancedTrackComponent,
         canActivate: [adminGuard],
         title: 'Advanced Track Batch | Admin Dashboard',
         data: { role: 'admin' }
       },
       {
         path: 'admin/track3',
-        component: FastrackComponent,
+        component: MasteryProgramComponent,
         canActivate: [adminGuard],
         title: 'Mastery Program Batch | Admin Dashboard',
         data: { role: 'admin' }
@@ -80,21 +82,9 @@ export const routes: Routes = [
         title: 'My Assessments & Certifications | Employee Dashboard',
         data: { role: 'employee' }
       },
-
-      // Legacy/Backward Compatible Routes (Redirect to Admin)
-      {
-        path: 'track1',
-        redirectTo: 'admin/track1',
-        pathMatch: 'full'
-      },
-      {
-        path: 'track2',
-        redirectTo: 'admin/track2',
-        pathMatch: 'full'
-      },
       {
         path: 'track3',
-        redirectTo: 'admin/track3',
+         component: EmployeeCalendarComponent,
         pathMatch: 'full'
       },
       {

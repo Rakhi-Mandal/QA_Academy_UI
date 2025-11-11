@@ -1,6 +1,7 @@
 import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -10,9 +11,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddEmployeeDialogComponent } from '../../add-employee-dialog/add-employee-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/employee-details-dialog.component';
+import { EmployeeService, Employee } from '../../../shared/services/employee.service';
 
 @Component({
   selector: 'app-fastrack',
@@ -22,6 +25,7 @@ import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/em
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     MatTableModule,
     MatCardModule,
     MatProgressBarModule,
@@ -30,7 +34,8 @@ import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/em
     MatIconModule,
     MatPaginatorModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSnackBarModule
   ]
 })
 export class FastrackComponent implements OnInit, AfterViewInit {
@@ -39,11 +44,17 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
   allEmployees: any[] = [];
   designations: string[] = [];
+  isLoading = false;
   
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    private employeeService: EmployeeService,
+    private snackBar: MatSnackBar
+  ) {}
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  selectedBatch = 1; // Default batch
   selectedDesignation = 'All';
   selectedAssessment = 'All';
   selectedCertification = 'All';
@@ -57,22 +68,55 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   }
 
   loadAllData() {
-    const employees = [
-      { employeeId: 'FS001', name: 'Aarav Mehta', email: 'aarav.mehta@company.com', designation: 'QA Engineer', assessment: 85, certification: 90 },
-      { employeeId: 'FS002', name: 'Diya Nair', email: 'diya.nair@company.com', designation: 'Automation Engineer', assessment: 78, certification: 82 },
-      { employeeId: 'FS003', name: 'Kabir Singh', email: 'kabir.singh@company.com', designation: 'Test Lead', assessment: 92, certification: 88 },
-      { employeeId: 'FS004', name: 'Meera Kapoor', email: 'meera.kapoor@company.com', designation: 'QA Analyst', assessment: 67, certification: 60 },
-      { employeeId: 'FS005', name: 'Rohan Patel', email: 'rohan.patel@company.com', designation: 'Automation Architect', assessment: 95, certification: 98 },
-      { employeeId: 'E006', name: 'Fiona', email: 'fiona@xyz.com', designation: 'Manager', assessment: 88, certification: 85 },
-      { employeeId: 'E007', name: 'George', email: 'george@xyz.com', designation: 'QA', assessment: 55, certification: 50 },
-      { employeeId: 'E008', name: 'Hannah', email: 'hannah@xyz.com', designation: 'Developer', assessment: 65, certification: 75 },
-      { employeeId: 'E009', name: 'Ian', email: 'ian@xyz.com', designation: 'QA', assessment: 35, certification: 45 },
-      { employeeId: 'E010', name: 'Jasmine', email: 'jasmine@xyz.com', designation: 'Manager', assessment: 95, certification: 92 }
-    ];
+    this.isLoading = true;
+    
+    // Replace with your actual batch code
+    this.employeeService.getEmployeesByBatch(this.selectedBatch).subscribe({
+      next: (response) => {
+        console.log('API Response:', response);
+        
+        if (response.success && response.data) {
+          // Map API response to match your table structure
+          const employees = response.data.map(emp => ({
+            employeeId: emp.Employee_ID,
+            name: emp.Employee_Name,
+            email: emp.Employee_Email,
+            designation: emp.Designation,
+            podId: emp.POD_ID,
+            pod: emp.POD,
+            batchCode: emp.Batch_Code,
+            assessment: emp.assessment || 0, // Default to 0 if not available
+            certification: emp.certification || 0 // Default to 0 if not available
+          }));
 
-    this.allEmployees = [...employees];
-    this.dataSource.data = [...employees];
-    this.designations = [...new Set(employees.map(e => e.designation))];
+          this.allEmployees = [...employees];
+          this.dataSource.data = [...employees];
+          this.designations = [...new Set(employees.map(e => e.designation))];
+          
+          this.snackBar.open('Employees loaded successfully', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top'
+          });
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading employees:', error);
+        this.snackBar.open('Error loading employees', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top'
+        });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // Method to change batch dynamically
+  onBatchChange(batchCode: number) {
+    this.selectedBatch = batchCode;
+    this.loadAllData();
   }
 
   applyFilters() {

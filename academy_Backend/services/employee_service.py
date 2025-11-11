@@ -4,8 +4,15 @@ from models.employee import (
     get_employees_by_batch,
     create_employee,
     update_employee,
-    delete_employee
+    delete_employee,
+    get_employee_all_records,
+    get_employee_certifications,
+    get_employee_assessments,
+    get_employee_courses
 )
+
+from fastapi import HTTPException
+from models import employee as employee_record_db
 
 
 def service_get_all_employees():
@@ -57,3 +64,75 @@ def service_update_employee(employee_id, data):
 def service_delete_employee(employee_id):
     success = delete_employee(employee_id)
     return {"success": success, "message": "Employee deleted successfully" if success else "Failed to delete employee", "data": None}
+
+
+
+def get_employee_records(employee_id: str):
+    """Get all records for an employee"""
+    try:
+        records = employee_record_db.get_employee_all_records(employee_id)
+        
+        total_count = (
+            len(records["certifications"]) + 
+            len(records["assessments"]) + 
+            len(records["courses"])
+        )
+        
+        return {
+            "success": True,
+            "employee_id": employee_id,
+            "data": records,
+            "summary": {
+                "total_certifications": len(records["certifications"]),
+                "total_assessments": len(records["assessments"]),
+                "total_courses": len(records["courses"]),
+                "total_records": total_count
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching employee records: {str(e)}")
+
+
+def get_employee_certifications(employee_id: str):
+    """Get certifications for an employee"""
+    try:
+        certifications = employee_record_db.get_employee_certifications(employee_id)
+        
+        return {
+            "success": True,
+            "employee_id": employee_id,
+            "data": certifications,
+            "total": len(certifications)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching certifications: {str(e)}")
+
+
+def get_employee_assessments(employee_id: str):
+    """Get assessments for an employee"""
+    try:
+        assessments = employee_record_db.get_employee_assessments(employee_id)
+        
+        return {
+            "success": True,
+            "employee_id": employee_id,
+            "data": assessments,
+            "total": len(assessments)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching assessments: {str(e)}")
+
+
+def get_employee_courses(employee_id: str):
+    """Get courses for an employee"""
+    try:
+        courses = employee_record_db.get_employee_courses(employee_id)
+        
+        return {
+            "success": True,
+            "employee_id": employee_id,
+            "data": courses,
+            "total": len(courses)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching courses: {str(e)}")

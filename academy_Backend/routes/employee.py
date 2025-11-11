@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,Path
 from schemas.employee import EmployeeCreate, EmployeeUpdate
 from services.employee_service import (
     service_get_all_employees,
@@ -6,8 +6,11 @@ from services.employee_service import (
     service_get_employees_by_batch,
     service_create_employee,
     service_update_employee,
-    service_delete_employee
+    service_delete_employee,
 )
+
+# import the employee_service module as an alias so route functions call module functions
+import services.employee_service as employee_record_service
 
 # ✅ No prefix or tags here — they are handled in main.py
 router = APIRouter()
@@ -47,3 +50,39 @@ def update_employee(employee_id: str, data: EmployeeUpdate):
 def delete_employee(employee_id: str):
     """Delete employee record"""
     return service_delete_employee(employee_id)
+
+
+@router.get("/{employee_id}/all")
+def get_employee_all_records(
+    employee_id: str = Path(..., description="Employee ID")
+):
+    """
+    Get all records (certifications, assessments, courses) for an employee
+    
+    Returns separate arrays for each type without null values
+    """
+    return employee_record_service.get_employee_records(employee_id)
+
+
+@router.get("/{employee_id}/certifications")
+def get_employee_certifications(
+    employee_id: str = Path(..., description="Employee ID")
+):
+    """Get all certifications for an employee"""
+    return employee_record_service.get_employee_certifications(employee_id)
+
+
+@router.get("/{employee_id}/assessments")
+def get_employee_assessments(
+    employee_id: str = Path(..., description="Employee ID")
+):
+    """Get all assessments for an employee"""
+    return employee_record_service.get_employee_assessments(employee_id)
+
+
+@router.get("/{employee_id}/courses")
+def get_employee_courses(
+    employee_id: str = Path(..., description="Employee ID")
+):
+    """Get all courses for an employee"""
+    return employee_record_service.get_employee_courses(employee_id)

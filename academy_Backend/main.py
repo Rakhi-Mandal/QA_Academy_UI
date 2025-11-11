@@ -8,6 +8,9 @@ from fastapi.staticfiles import StaticFiles
 from routes import assessment
 from routes import batch
 from routes import pod
+from routes import courses
+from routes import course_record
+from routes import employee
 from dotenv import load_dotenv
 import os
 from config import settings
@@ -86,6 +89,26 @@ app.include_router(
 app.include_router(batch.router, prefix="/api/batches")
  
 app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
+
+# Register Course Routes
+app.include_router(
+    courses.router,
+    prefix="/api/courses",
+    tags=["Courses"]
+)
+
+# Register Course Record Routes
+app.include_router(
+    course_record.router,
+    prefix="/api/course-records",
+    tags=["Course Records"]
+)
+
+app.include_router(
+    employee.router, 
+    prefix="/api/employee", 
+    tags=["Employee"]
+)
 
 if __name__ == "__main__":
     import uvicorn
