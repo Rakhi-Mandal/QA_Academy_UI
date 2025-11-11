@@ -1,20 +1,18 @@
 """
-Courses Service - Business logic (WITH Deadline Management)
+Courses Service - Business logic
 """
 from models import courses as courses_model
-# from models import deadline as deadline_model
 from schemas.courses import CourseCreate, CourseUpdate
 from utils.response import success_response, error_response
 from typing import Dict
 
 
-def get_all_courses(include_stats: bool = False, batch_code: int = None) -> Dict:
+def get_all_courses(include_stats: bool = False) -> Dict:
     """
-    Get all courses with optional statistics and deadlines
+    Get all courses with optional statistics
     
     Args:
         include_stats: If True, include completion statistics
-        batch_code: If provided, include deadlines for this batch
         
     Returns:
         JSON response with courses list
@@ -31,16 +29,6 @@ def get_all_courses(include_stats: bool = False, batch_code: int = None) -> Dict
                 status_code=500
             )
         
-        # If batch_code provided, add deadline info for each course
-        # if batch_code:
-        #     for course in courses:
-        #         deadline = deadline_model.get_deadline_by_task_and_batch(
-        #             course['Courses_ID'], 
-        #             'Course', 
-        #             batch_code
-        #         )
-        #         course['deadline'] = deadline['Deadline_Date'] if deadline else None
-        
         return success_response(
             data=courses,
             message=f"Retrieved {len(courses)} course(s) successfully",
@@ -54,13 +42,12 @@ def get_all_courses(include_stats: bool = False, batch_code: int = None) -> Dict
         )
 
 
-def get_course_by_id(course_id: str, batch_code: int = None) -> Dict:
+def get_course_by_id(course_id: str) -> Dict:
     """
-    Get specific course by ID with optional deadline info
+    Get specific course by ID
     
     Args:
         course_id: Course ID to retrieve
-        batch_code: If provided, include deadline for this batch
         
     Returns:
         JSON response with course data
@@ -82,19 +69,6 @@ def get_course_by_id(course_id: str, batch_code: int = None) -> Dict:
                 status_code=500
             )
         
-        # Get all deadlines for this course
-        # deadlines = deadline_model.get_deadlines_by_task(course_id, 'Course')
-        # course['deadlines'] = deadlines
-        
-        # # If specific batch requested, add that deadline
-        # if batch_code:
-        #     deadline = deadline_model.get_deadline_by_task_and_batch(
-        #         course_id, 
-        #         'Course', 
-        #         batch_code
-        #     )
-        #     course['deadline'] = deadline['Deadline_Date'] if deadline else None
-        
         return success_response(
             data=course,
             message="Course retrieved successfully",
@@ -110,19 +84,27 @@ def get_course_by_id(course_id: str, batch_code: int = None) -> Dict:
 
 def create_course(course_data: CourseCreate) -> Dict:
     """
-    Create new course (no deadlines)
+    Create new course with auto-incremented ID
+    
+    Args:
+        course_data: Course creation data (name and link only)
+        
+    Returns:
+        JSON response with created course
     """
     try:
-        # Check if course already exists
-        if courses_model.course_exists(course_data.courses_id):
+        # Get next auto-incremented course ID
+        next_course_id = courses_model.get_next_course_id()
+        
+        if not next_course_id:
             return error_response(
-                message=f"Course with ID '{course_data.courses_id}' already exists",
-                status_code=409
+                message="Failed to generate course ID",
+                status_code=500
             )
 
         # Create course
         success = courses_model.create_course(
-            courses_id=course_data.courses_id,
+            courses_id=next_course_id,
             name=course_data.name,
             link=course_data.link
         )
@@ -133,21 +115,15 @@ def create_course(course_data: CourseCreate) -> Dict:
                 status_code=500
             )
 
-        # ✅ FIX: call the function correctly
-        created_course = courses_model.get_course_by_id(course_data.courses_id)
+        # Retrieve created course
+        created_course = courses_model.get_course_by_id(next_course_id)
 
         return success_response(
             data=created_course,
-            message="Course created successfully",
+            message=f"Course created successfully with ID: {next_course_id}",
             status_code=201
         )
 
-    except Exception as e:
-        return error_response(
-            message=f"Error creating course: {str(e)}",
-            status_code=500
-        )
-    
     except Exception as e:
         return error_response(
             message=f"Error creating course: {str(e)}",
@@ -157,7 +133,7 @@ def create_course(course_data: CourseCreate) -> Dict:
 
 def update_course(course_id: str, course_data: CourseUpdate) -> Dict:
     """
-    Update existing course (deadlines updated separately)
+    Update existing course
     
     Args:
         course_id: Course ID to update
@@ -178,7 +154,6 @@ def update_course(course_id: str, course_data: CourseUpdate) -> Dict:
         success = courses_model.update_course(
             courses_id=course_id,
             name=course_data.name,
-            # deadline_date=None,  # Not updated here
             link=course_data.link
         )
         
@@ -190,8 +165,6 @@ def update_course(course_id: str, course_data: CourseUpdate) -> Dict:
         
         # Retrieve updated course
         updated_course = courses_model.get_course_by_id(course_id)
-        # deadlines = deadline_model.get_deadlines_by_task(course_id, 'Course')
-        # updated_course['deadlines'] = deadlines
         
         return success_response(
             data=updated_course,
@@ -208,7 +181,7 @@ def update_course(course_id: str, course_data: CourseUpdate) -> Dict:
 
 def delete_course(course_id: str) -> Dict:
     """
-    Delete course (and all its deadlines)
+    Delete course
     
     Args:
         course_id: Course ID to delete
@@ -231,9 +204,6 @@ def delete_course(course_id: str) -> Dict:
                 status_code=409
             )
         
-        # Delete all deadlines for this course
-        # deadline_model.delete_all_deadlines_for_task(course_id, 'Course')
-        
         # Delete course
         success, message = courses_model.delete_course(course_id)
         
@@ -245,7 +215,7 @@ def delete_course(course_id: str) -> Dict:
         
         return success_response(
             data={"courses_id": course_id},
-            message="Course and all deadlines deleted successfully",
+            message="Course deleted successfully",
             status_code=200
         )
     
@@ -277,10 +247,6 @@ def get_course_with_employees(course_id: str) -> Dict:
         # Get course details
         course = courses_model.get_course_by_id(course_id)
         
-        # Get deadlines
-        # deadlines = deadline_model.get_deadlines_by_task(course_id, 'Course')
-        # course['deadlines'] = deadlines
-        
         # Get employees who completed this course
         from models import course_record as record_model
         employees = record_model.get_records_by_course(course_id)
@@ -301,28 +267,17 @@ def get_course_with_employees(course_id: str) -> Dict:
             status_code=500
         )
 
-def get_course_count(include_stats: bool = False) -> Dict:
+
+def get_course_count() -> Dict:
     """
     Get total course count
-    
-    Args:
-        include_stats: (Future use) Include additional statistics
     
     Returns:
         JSON response with total course count
     """
     try:
         # Fetch course count from model
-        courses = courses_model.get_course_count()  # returns list of dicts
-        
-        if not courses:
-            return error_response(
-                message="Failed to retrieve course count",
-                status_code=500
-            )
-        
-        # Extract the actual count value (since fetchall() returns a list)
-        total_courses = courses[0]["total_courses"]
+        total_courses = courses_model.get_course_count()
 
         # Build and return success response
         return success_response(
@@ -334,5 +289,33 @@ def get_course_count(include_stats: bool = False) -> Dict:
     except Exception as e:
         return error_response(
             message=f"Error retrieving course count: {str(e)}",
+            status_code=500
+        )
+
+
+def get_recent_completions(limit: int = 2) -> Dict:
+    """
+    Get recent course completions with course name and employee name
+    
+    Args:
+        limit: Number of recent completions to retrieve (default: 2)
+        
+    Returns:
+        JSON response with recent completions (Course_Name, Employee_Name, Completion_Datetime)
+    """
+    try:
+        # Fetch recent completions from model
+        recent_completions = courses_model.get_recent_course_completions(limit)
+
+        # Build and return success response
+        return success_response(
+            data=recent_completions,
+            message=f"Retrieved {len(recent_completions)} recent completion(s) successfully",
+            status_code=200
+        )
+    
+    except Exception as e:
+        return error_response(
+            message=f"Error retrieving recent completions: {str(e)}",
             status_code=500
         )

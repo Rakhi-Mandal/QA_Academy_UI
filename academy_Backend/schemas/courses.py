@@ -1,15 +1,8 @@
 """
-Pydantic schemas for Courses API (WITH Deadline Support)
+Pydantic schemas for Courses API
 """
 from pydantic import BaseModel, Field, validator
-from typing import Optional, List
-from datetime import date
-
-
-class DeadlineInfo(BaseModel):
-    """Deadline information for a batch"""
-    batch_code: int = Field(..., gt=0)
-    deadline_date: date
+from typing import Optional
 
 
 class CourseBase(BaseModel):
@@ -30,21 +23,26 @@ class CourseBase(BaseModel):
         return None
 
 
-class CourseCreate(CourseBase):
-    """Schema for creating new course WITH deadlines"""
-    courses_id: str = Field(..., min_length=1, max_length=50, description="Unique course ID")
-    # deadlines: List[DeadlineInfo] = Field(..., min_items=1, description="Deadlines for different batches")
+class CourseCreate(BaseModel):
+    """Schema for creating new course (auto-increment ID)"""
+    name: str = Field(..., min_length=1, max_length=255, description="Course name")
+    link: Optional[str] = Field(None, max_length=500, description="Course link/URL")
     
-    @validator('courses_id')
-    def courses_id_not_empty(cls, v):
+    @validator('name')
+    def name_not_empty(cls, v):
         if not v or not v.strip():
-            raise ValueError('Course ID cannot be empty')
+            raise ValueError('Course name cannot be empty')
         return v.strip()
+    
+    @validator('link')
+    def validate_link(cls, v):
+        if v and v.strip():
+            return v.strip()
+        return None
     
     class Config:
         json_schema_extra = {
             "example": {
-                "courses_id": "C24",
                 "name": "Python for QA Engineers",
                 "link": "https://courses.example.com/python-qa"
             }
@@ -52,7 +50,7 @@ class CourseCreate(CourseBase):
 
 
 class CourseUpdate(CourseBase):
-    """Schema for updating course (deadlines updated separately)"""
+    """Schema for updating course"""
     
     class Config:
         json_schema_extra = {
@@ -65,9 +63,9 @@ class CourseUpdate(CourseBase):
 
 class CourseResponse(BaseModel):
     """Schema for course response"""
-    courses_id: str
-    name: str
-    link: Optional[str]
+    Courses_ID: str
+    Name: str
+    Link: Optional[str]
     
     class Config:
         from_attributes = True

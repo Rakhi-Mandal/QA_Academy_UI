@@ -5,7 +5,6 @@ Uses centralized queries from queries.py
 from database.connection import get_db_connection, close_db_connection
 from database import queries
 from typing import List, Dict, Optional
-import datetime
 
 
 def get_all_courses() -> List[Dict]:
@@ -20,11 +19,6 @@ def get_all_courses() -> List[Dict]:
         print("📄 Executing query: GET_ALL_COURSES")
         cursor.execute(queries.GET_ALL_COURSES)
         courses = cursor.fetchall()
-
-        # ✅ Convert date objects to ISO strings
-        # for c in courses:
-        #     if isinstance(c.get("Deadline_Date"), (datetime.date, datetime.datetime)):
-        #         c["Deadline_Date"] = c["Deadline_Date"].isoformat()
 
         print(f"📊 Total rows fetched: {len(courses)}")
         return courses
@@ -47,10 +41,6 @@ def get_course_by_id(course_id: str) -> Optional[Dict]:
         cursor = connection.cursor(dictionary=True)
         cursor.execute(queries.GET_COURSE_BY_ID, (course_id,))
         course = cursor.fetchone()
-
-        # if course and isinstance(course.get("Deadline_Date"), (datetime.date, datetime.datetime)):
-        #     course["Deadline_Date"] = course["Deadline_Date"].isoformat()
-
         return course
 
     except Exception as e:
@@ -71,11 +61,6 @@ def get_courses_with_stats() -> List[Dict]:
         cursor = connection.cursor(dictionary=True)
         cursor.execute(queries.GET_COURSES_WITH_COMPLETION_COUNT)
         courses = cursor.fetchall()
-
-        # for c in courses:
-        #     if isinstance(c.get("Deadline_Date"), (datetime.date, datetime.datetime)):
-        #         c["Deadline_Date"] = c["Deadline_Date"].isoformat()
-
         return courses
     except Exception as e:
         print(f"Error in get_courses_with_stats: {e}")
@@ -109,7 +94,7 @@ def create_course(courses_id: str, name: str, link: Optional[str] = None) -> boo
         close_db_connection(connection)
 
 
-def update_course(courses_id: str, name: str,  link: Optional[str] = None) -> bool:
+def update_course(courses_id: str, name: str, link: Optional[str] = None) -> bool:
     """Update existing course"""
     connection = get_db_connection()
     if not connection:
@@ -205,26 +190,71 @@ def course_has_records(courses_id: str) -> bool:
         cursor.close()
         close_db_connection(connection)
 
-def get_course_count() -> List[Dict]:
-    """Get all courses from database"""
+
+def get_course_count() -> int:
+    """Get total number of courses"""
     connection = get_db_connection()
     if not connection:
         print("❌ Database connection failed in get_course_count()")
+        return 0
+    
+    try:
+        cursor = connection.cursor()
+        cursor.execute(queries.COURSES_COUNT)
+        result = cursor.fetchone()
+        return result[0] if result else 0
+
+    except Exception as e:
+        print(f"💥 Error in get_course_count: {e}")
+        return 0
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+def get_recent_course_completions(limit: int = 2) -> List[Dict]:
+    """Get recent course completions with course name and employee name"""
+    connection = get_db_connection()
+    if not connection:
+        print("❌ Database connection failed in get_recent_course_completions()")
         return []
     
     try:
         cursor = connection.cursor(dictionary=True)
-        print("📄 Executing query: COURSES_COUNT")
-        cursor.execute(queries.COURSES_COUNT)
-        courses = cursor.fetchall()
+        cursor.execute(queries.GET_RECENT_COURSE_COMPLETIONS, (limit,))
+        records = cursor.fetchall()
 
+        # Convert datetime to ISO strings
+        for r in records:
+            if r.get("Completion_Datetime"):
+                r["Completion_Datetime"] = r["Completion_Datetime"].isoformat()
 
-        print(f"📊 Total rows : {len(courses)}")
-        return courses
+        return records
 
     except Exception as e:
-        print(f"💥 Error in get_course_count: {e}")
+        print(f"💥 Error in get_recent_course_completions: {e}")
         return []
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+def get_next_course_id() -> Optional[str]:
+    """Get next auto-incremented course ID"""
+    connection = get_db_connection()
+    if not connection:
+        print("❌ Database connection failed in get_next_course_id()")
+        return None
+    
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(queries.GET_NEXT_COURSE_ID)
+        result = cursor.fetchone()
+        return result['next_id'] if result else 'C01'
+
+    except Exception as e:
+        print(f"💥 Error in get_next_course_id: {e}")
+        return None
     finally:
         cursor.close()
         close_db_connection(connection)

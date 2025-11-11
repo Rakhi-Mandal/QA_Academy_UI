@@ -46,24 +46,24 @@ class CourseRecordUpdate(BaseModel):
 
 class CourseRecordResponse(BaseModel):
     """Schema for course record response"""
-    record_id: int
-    completion_datetime: datetime
-    document: Optional[str]
-    course_id: str
-    course_name: str
-    employee_id: str
-    employee_name: str
+    Record_ID: int
+    Completion_Datetime: datetime
+    Document: Optional[str]
+    Course_ID: str
+    Course_Name: str
+    Employee_ID: str
+    Employee_Name: str
     
     class Config:
         from_attributes = True
         json_schema_extra = {
             "example": {
-                "record_id": 1,
-                "completion_datetime": "2024-11-15T14:30:00",
-                "document": "FS452_Course_C001.pdf",
-                "course_id": "C001",
-                "course_name": "Python for QA Engineers",
-                "employee_id": "FS452",
-                "employee_name": "Shirisha Mannem"
+                "Record_ID": 1,
+                "Completion_Datetime": "2024-11-15T14:30:00",
+                "Document": "FS452_Course_C001.pdf",
+                "Course_ID": "C001",
+                "Course_Name": "Python for QA Engineers",
+                "Employee_ID": "FS452",
+                "Employee_Name": "Shirisha Mannem"
             }
         }

@@ -118,10 +118,10 @@ def create_record(course_id: str, employee_id: str, completion_datetime: str, do
     try:
         cursor = connection.cursor()
         query = """
-            INSERT INTO courses_record (Completion_Datetime, Document, Course_ID, Employee_ID) 
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO courses_record ( Document, Course_ID, Employee_ID) 
+            VALUES ( %s, %s, %s)
         """
-        cursor.execute(query, (completion_datetime, document, course_id, employee_id))
+        cursor.execute(query, ( document, course_id, employee_id))
         connection.commit()
         return cursor.lastrowid
     except Exception as e:
