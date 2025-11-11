@@ -111,16 +111,13 @@ GET_RECENT_CERTIFICATION_RECORDS = """
     JOIN certification_table c ON cr.Certification_ID = c.Certification_ID
     ORDER BY cr.Upload_Time DESC
     LIMIT 3
+"""  
 # ============================================
 # COURSES QUERIES
 # ============================================
 
 GET_ALL_COURSES = """
-    SELECT 
-        Courses_ID,
-        Name,
-        Link
-    FROM courses_table
+    SELECT Courses_ID, Name, Link FROM courses_table
 """
 
 GET_COURSE_BY_ID = """
