@@ -1,0 +1,139 @@
+<div class="dashboard-container" @fadeInUp>
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="page-title">Welcome back!</h3>
+    <p class="page-subtitle">Here's what's happening with your academy today.</p>
+  </div>
+
+  <!-- Stat Cards Grid -->
+  <div class="stats-grid" [@staggerFade]="statCards.length">
+    <div class="stat-card" *ngFor="let card of statCards">
+      <div class="stat-card-content">
+        <div class="stat-icon-wrapper" [ngClass]="card.iconBg">
+          <div class="stat-icon" [innerHTML]="card.icon | safeHtml"></div>
+        </div>
+        <div class="stat-details">
+          <p class="stat-label">{{ card.title }}</p>
+          <h3 class="stat-value">{{ card.value }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Recent Activity -->
+    <div class="activity-card card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Activity</h2>
+      </div>
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let activity of recentActivities">
+          <div class="activity-icon-wrapper">
+            <div class="activity-icon" [innerHTML]="activity.icon | safeHtml"></div>
+          </div>
+          <div class="activity-content">
+            <p class="activity-text">
+              <strong>{{ activity.employee }}</strong> {{ activity.action }}
+              <span class="activity-target">{{ activity.target }}</span>
+            </p>
+            <p class="activity-time">{{ activity.time }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="performers-card card">
+      <div class="card-header">
+        <h2 class="card-title">Top Performers</h2>
+      </div>
+      <div class="performers-list">
+        <div class="performer-item" *ngFor="let performer of topPerformers">
+          <div class="performer-badge">{{ performer.badge }}</div>
+          <div class="performer-info">
+            <p class="performer-name">{{ performer.name }}</p>
+            <p class="performer-department">{{ performer.department }}</p>
+          </div>
+          <div class="performer-score">{{ performer.score }}%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart and Quick Actions -->
+  <div class="bottom-grid">
+    <!-- Employee Distribution Chart -->
+    <div class="chart-card card">
+      <div class="card-header">
+        <h2 class="card-title">Employee Distribution by Designation</h2>
+      </div>
+      <div class="chart-wrapper">
+        <apx-chart
+          [series]="chartSeries"
+          [chart]="chartOptions"
+          [colors]="chartColors"
+          [plotOptions]="plotOptions"
+          [dataLabels]="dataLabels"
+          [stroke]="stroke"
+          [xaxis]="xaxis"
+          [grid]="grid"
+          [legend]="legend"
+          [tooltip]="tooltip"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-card card">
+      <div class="card-header">
+        <h2 class="card-title">Quick Actions</h2>
+      </div>
+      <div class="actions-list">
+        <button class="action-button action-primary" (click)="addEmployee()">
+          <div class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="22" y1="11" x2="16" y2="11"></line>
+            </svg>
+          </div>
+          <div class="action-content">
+            <p class="action-title">Add Employee</p>
+            <p class="action-desc">Register a new team member</p>
+          </div>
+        </button>
+
+        <button class="action-button action-warning" (click)="addCertification()">
+          <div class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <div class="action-content">
+            <p class="action-title">Add Certification</p>
+            <p class="action-desc">Create new certification track</p>
+          </div>
+        </button>
+
+        <button class="action-button action-info" (click)="addAssignment()">
+          <div class="action-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div class="action-content">
+            <p class="action-title">Add Assignment</p>
+            <p class="action-desc">Create new assessment task</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

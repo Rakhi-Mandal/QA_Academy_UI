@@ -1,6 +1,5 @@
 from database.connection import get_db_connection, close_db_connection
 from typing import List, Dict, Optional, Tuple
-import datetime
 
 
 def get_all_assessments() -> List[Dict]:
@@ -13,19 +12,13 @@ def get_all_assessments() -> List[Dict]:
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Assessment_ID, Scheduled_Date, Name, Link
+            SELECT Assessment_ID, Name, Link
             FROM assessment_table
-            ORDER BY Scheduled_Date DESC
+            ORDER BY Assessment_ID DESC
         """
         print("📄 Executing query:", query)
         cursor.execute(query)
         assessments = cursor.fetchall()
-
-        # ✅ Convert date objects to ISO strings
-        for a in assessments:
-            if isinstance(a.get("Scheduled_Date"), (datetime.date, datetime.datetime)):
-                a["Scheduled_Date"] = a["Scheduled_Date"].isoformat()
-
         print(f"🔍 Total rows fetched: {len(assessments)}")
         return assessments
 
@@ -46,16 +39,12 @@ def get_assessment_by_id(assessment_id: str) -> Optional[Dict]:
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT Assessment_ID, Scheduled_Date, Name, Link 
+            SELECT Assessment_ID, Name, Link
             FROM assessment_table 
             WHERE Assessment_ID = %s
         """
         cursor.execute(query, (assessment_id,))
         assessment = cursor.fetchone()
-
-        if assessment and isinstance(assessment.get("Scheduled_Date"), (datetime.date, datetime.datetime)):
-            assessment["Scheduled_Date"] = assessment["Scheduled_Date"].isoformat()
-
         return assessment
 
     except Exception as e:
@@ -77,23 +66,17 @@ def get_assessments_with_stats() -> List[Dict]:
         query = """
             SELECT 
                 a.Assessment_ID,
-                a.Scheduled_Date,
                 a.Name,
                 a.Link,
                 COUNT(ar.Record_ID) AS total_completed,
                 COALESCE(AVG(ar.Mark_Secured), 0) AS average_score
             FROM assessment_table a
             LEFT JOIN assessment_record ar ON a.Assessment_ID = ar.Assessment_ID
-            GROUP BY a.Assessment_ID, a.Scheduled_Date, a.Name, a.Link
-            ORDER BY a.Scheduled_Date DESC
+            GROUP BY a.Assessment_ID, a.Name, a.Link
+            ORDER BY a.Assessment_ID DESC
         """
         cursor.execute(query)
         assessments = cursor.fetchall()
-
-        for a in assessments:
-            if isinstance(a.get("Scheduled_Date"), (datetime.date, datetime.datetime)):
-                a["Scheduled_Date"] = a["Scheduled_Date"].isoformat()
-
         return assessments
     except Exception as e:
         print(f"Error in get_assessments_with_stats: {e}")
@@ -103,7 +86,7 @@ def get_assessments_with_stats() -> List[Dict]:
         close_db_connection(connection)
 
 
-def create_assessment(assessment_id: str, name: str, scheduled_date: Optional[str] = None, link: Optional[str] = None) -> bool:
+def create_assessment(assessment_id: str, name: str, link: Optional[str] = None) -> bool:
     """Create new assessment"""
     connection = get_db_connection()
     if not connection:
@@ -112,10 +95,10 @@ def create_assessment(assessment_id: str, name: str, scheduled_date: Optional[st
     try:
         cursor = connection.cursor()
         query = """
-            INSERT INTO assessment_table (Assessment_ID, Name, Scheduled_Date, Link)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO assessment_table (Assessment_ID, Name, Link)
+            VALUES (%s, %s, %s)
         """
-        cursor.execute(query, (assessment_id, name, scheduled_date, link))
+        cursor.execute(query, (assessment_id, name, link))
         connection.commit()
         return True
     except Exception as e:
@@ -127,7 +110,7 @@ def create_assessment(assessment_id: str, name: str, scheduled_date: Optional[st
         close_db_connection(connection)
 
 
-def update_assessment(assessment_id: str, name: str, scheduled_date: Optional[str] = None, link: Optional[str] = None) -> bool:
+def update_assessment(assessment_id: str, name: str, link: Optional[str] = None) -> bool:
     """Update existing assessment"""
     connection = get_db_connection()
     if not connection:
@@ -137,10 +120,10 @@ def update_assessment(assessment_id: str, name: str, scheduled_date: Optional[st
         cursor = connection.cursor()
         query = """
             UPDATE assessment_table 
-            SET Name = %s, Scheduled_Date = %s, Link = %s
+            SET Name = %s, Link = %s
             WHERE Assessment_ID = %s
         """
-        cursor.execute(query, (name, scheduled_date, link, assessment_id))
+        cursor.execute(query, (name, link, assessment_id))
         connection.commit()
         return cursor.rowcount > 0
     except Exception as e:
@@ -160,8 +143,6 @@ def delete_assessment(assessment_id: str) -> Tuple[bool, str]:
     
     try:
         cursor = connection.cursor()
-
-        # Check if assessment has records
         check_query = "SELECT COUNT(*) FROM assessment_record WHERE Assessment_ID = %s"
         cursor.execute(check_query, (assessment_id,))
         result = cursor.fetchone()
@@ -169,7 +150,6 @@ def delete_assessment(assessment_id: str) -> Tuple[bool, str]:
         if result and result[0] > 0:
             return False, "Cannot delete assessment with existing records"
         
-        # Delete assessment
         delete_query = "DELETE FROM assessment_table WHERE Assessment_ID = %s"
         cursor.execute(delete_query, (assessment_id,))
         connection.commit()

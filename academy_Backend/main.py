@@ -6,9 +6,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import assessment, courses, course_record
+from routes import batch
+from routes import pod
 from dotenv import load_dotenv
 import os
 from config import settings
+from routes import assessment_record
+from routes import employee
+
 
 # Create uploads directories if they don't exist
 os.makedirs("uploads/assessments", exist_ok=True)
@@ -38,49 +43,28 @@ app.add_middleware(
 # Mount uploads folder for file serving
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# @app.get("/", tags=["Root"])
-# def root():
-#     """Root endpoint - API information"""
-#     return {
-#         "message": "QE Academy Backend API",
-#         "status": "Running",
-#         "version": "1.0.0",
-#         "docs": "/docs",
-#         "redoc": "/redoc"
-#     }
-
-# @app.get("/health", tags=["Health"])
-# def health_check():
-#     """Health check endpoint"""
-#     return {
-#         "status": "healthy",
-#         "environment": settings.APP_ENV
-#     }
-
-# @app.get("/test-db", tags=["Health"])
-# def test_database():
-#     """Test database connection"""
-#     from database.connection import get_db_connection, close_db_connection
-    
-#     conn = get_db_connection()
-#     if conn:
-#         close_db_connection(conn)
-#         return {
-#             "status": "success",
-#             "message": "Database connected successfully"
-#         }
-#     else:
-#         return {
-#             "status": "error",
-#             "message": "Database connection failed"
-#         }
-
 # Register Assessment Routes
 app.include_router(
     assessment.router,
     prefix="/api/assessments",
     tags=["Assessments"]
 )
+
+app.include_router(
+    assessment_record.router,
+    prefix="/api/assessment-records",
+    tags=["Assessment Records"]
+)
+
+app.include_router(
+    employee.router,
+    prefix="/api/employees",
+    tags=["Employees"]
+)
+
+app.include_router(batch.router, prefix="/api/batches")
+ 
+app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
 
 # Register Course Routes
 app.include_router(

@@ -49,7 +49,6 @@ def create_assessment(assessment: AssessmentCreate):
     Request Body:
     - **assessment_id**: Unique assessment ID
     - **name**: Assessment name (required)
-    - **scheduled_date**: Scheduled date (optional, format: YYYY-MM-DD)
     - **link**: Assessment link/URL (optional)
     
     Returns:
