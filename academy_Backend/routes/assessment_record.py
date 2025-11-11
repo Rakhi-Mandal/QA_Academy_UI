@@ -2,7 +2,9 @@ from fastapi import APIRouter, Path, UploadFile, File, Form
 from schemas.assessment_record import AssessmentRecordCreate, AssessmentRecordUpdate
 from services import assessment_record_service
 import os
+from starlette.concurrency import run_in_threadpool
 from datetime import datetime
+from typing import Optional
 
 router = APIRouter()
 
@@ -25,11 +27,28 @@ def get_records_by_employee(employee_id: str = Path(..., description="Employee I
     return assessment_record_service.get_records_by_employee(employee_id)
 
 
-@router.post("/")
-def create_record(record: AssessmentRecordCreate):
-    """Create new assessment record"""
-    return assessment_record_service.create_record(record)
+@router.post("/create-record", status_code=201)
+async def create_assessment_record_api(
+    employee_id: str = Form(..., description="Employee ID"),
+    assessment_id: str = Form(..., description="Assessment ID"),
+    mark_secured: float = Form(..., description="Marks secured"),
+    document: UploadFile = File(..., description="Assessment document file (PDF/Image)"),
+    upload_time: Optional[str] = Form(None, description="Upload datetime (optional)")
+):
+    """Create a new assessment record, handling document upload."""
+    record_data = {
+        "employee_id": employee_id,
+        "assessment_id": assessment_id,
+        "mark_secured": mark_secured,
+        "upload_time": upload_time or datetime.now().isoformat(timespec='seconds')
+    }
 
+    result = await run_in_threadpool(
+        assessment_record_service.create_record_with_file,
+        record_data,
+        document   # ✅ pass `document` instead of `file`
+    )
+    return result
 
 @router.put("/{record_id}")
 def update_record(record_id: int, record: AssessmentRecordUpdate):
