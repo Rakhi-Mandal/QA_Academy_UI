@@ -1,13 +1,10 @@
-
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-from datetime import date
 
 
 class AssessmentBase(BaseModel):
     """Base schema with common fields"""
     name: str = Field(..., min_length=1, max_length=255, description="Assessment name")
-    scheduled_date: Optional[date] = Field(None, description="Scheduled date for assessment")
     link: Optional[str] = Field(None, max_length=500, description="Assessment link/URL")
     
     @validator('name')
@@ -38,7 +35,6 @@ class AssessmentCreate(AssessmentBase):
             "example": {
                 "assessment_id": "ASM001",
                 "name": "Python Fundamentals Test",
-                "scheduled_date": "2025-11-15",
                 "link": "https://assessment.example.com/python-test"
             }
         }
@@ -51,7 +47,6 @@ class AssessmentUpdate(AssessmentBase):
         json_schema_extra = {
             "example": {
                 "name": "Python Advanced Test",
-                "scheduled_date": "2025-11-20",
                 "link": "https://assessment.example.com/python-advanced"
             }
         }
@@ -61,7 +56,6 @@ class AssessmentResponse(BaseModel):
     """Schema for assessment response"""
     assessment_id: str
     name: str
-    scheduled_date: Optional[date]
     link: Optional[str]
     
     class Config:
@@ -70,7 +64,6 @@ class AssessmentResponse(BaseModel):
             "example": {
                 "assessment_id": "ASM001",
                 "name": "Python Fundamentals Test",
-                "scheduled_date": "2025-11-15",
                 "link": "https://assessment.example.com/python-test"
             }
         }
@@ -87,7 +80,6 @@ class AssessmentWithStats(AssessmentResponse):
             "example": {
                 "assessment_id": "ASM001",
                 "name": "Python Fundamentals Test",
-                "scheduled_date": "2025-11-15",
                 "link": "https://assessment.example.com/python-test",
                 "total_completed": 25,
                 "average_score": 87.5

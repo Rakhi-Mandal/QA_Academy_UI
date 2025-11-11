@@ -13,11 +13,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AddEmployeeDialogComponent } from '../../add-employee-dialog/add-employee-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/employee-details-dialog.component';
+
 @Component({
   selector: 'app-fastrack',
   standalone: true,
   templateUrl: './fastrack.component.html',
-  styleUrls: ['./fastrack.component.css'],
+  styleUrls: ['./fastrack.component.scss'],
   imports: [
     CommonModule,
     FormsModule,
@@ -36,6 +37,7 @@ export class FastrackComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['slNo', 'employeeId', 'name', 'email', 'designation', 'assessment', 'certification', 'action'];
   dataSource = new MatTableDataSource<any>([]);
+  allEmployees: any[] = [];
   designations: string[] = [];
   
   constructor(public dialog: MatDialog) {}
@@ -57,24 +59,24 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   loadAllData() {
     const employees = [
       { employeeId: 'FS001', name: 'Aarav Mehta', email: 'aarav.mehta@company.com', designation: 'QA Engineer', assessment: 85, certification: 90 },
-  { employeeId: 'FS002', name: 'Diya Nair', email: 'diya.nair@company.com', designation: 'Automation Engineer', assessment: 78, certification: 82 },
-  { employeeId: 'FS003', name: 'Kabir Singh', email: 'kabir.singh@company.com', designation: 'Test Lead', assessment: 92, certification: 88 },
-  { employeeId: 'FS004', name: 'Meera Kapoor', email: 'meera.kapoor@company.com', designation: 'QA Analyst', assessment: 67, certification: 60 },
-  { employeeId: 'FS005', name: 'Rohan Patel', email: 'rohan.patel@company.com', designation: 'Automation Architect', assessment: 95, certification: 98 },
-  { employeeId: 'E005', name: 'Ethan', email: 'ethan@xyz.com', designation: 'Developer', assessment: 40, certification: 60 },
-  { employeeId: 'E006', name: 'Fiona', email: 'fiona@xyz.com', designation: 'Manager', assessment: 88, certification: 85 },
-  { employeeId: 'E007', name: 'George', email: 'george@xyz.com', designation: 'QA', assessment: 55, certification: 50 },
-  { employeeId: 'E008', name: 'Hannah', email: 'hannah@xyz.com', designation: 'Developer', assessment: 65, certification: 75 },
-  { employeeId: 'E009', name: 'Ian', email: 'ian@xyz.com', designation: 'QA', assessment: 35, certification: 45 },
-  { employeeId: 'E010', name: 'Jasmine', email: 'jasmine@xyz.com', designation: 'Manager', assessment: 95, certification: 92 }
- ];
+      { employeeId: 'FS002', name: 'Diya Nair', email: 'diya.nair@company.com', designation: 'Automation Engineer', assessment: 78, certification: 82 },
+      { employeeId: 'FS003', name: 'Kabir Singh', email: 'kabir.singh@company.com', designation: 'Test Lead', assessment: 92, certification: 88 },
+      { employeeId: 'FS004', name: 'Meera Kapoor', email: 'meera.kapoor@company.com', designation: 'QA Analyst', assessment: 67, certification: 60 },
+      { employeeId: 'FS005', name: 'Rohan Patel', email: 'rohan.patel@company.com', designation: 'Automation Architect', assessment: 95, certification: 98 },
+      { employeeId: 'E006', name: 'Fiona', email: 'fiona@xyz.com', designation: 'Manager', assessment: 88, certification: 85 },
+      { employeeId: 'E007', name: 'George', email: 'george@xyz.com', designation: 'QA', assessment: 55, certification: 50 },
+      { employeeId: 'E008', name: 'Hannah', email: 'hannah@xyz.com', designation: 'Developer', assessment: 65, certification: 75 },
+      { employeeId: 'E009', name: 'Ian', email: 'ian@xyz.com', designation: 'QA', assessment: 35, certification: 45 },
+      { employeeId: 'E010', name: 'Jasmine', email: 'jasmine@xyz.com', designation: 'Manager', assessment: 95, certification: 92 }
+    ];
 
-    this.dataSource.data = employees;
-    this.designations = [ ...new Set(employees.map(e => e.designation))];
+    this.allEmployees = [...employees];
+    this.dataSource.data = [...employees];
+    this.designations = [...new Set(employees.map(e => e.designation))];
   }
 
   applyFilters() {
-    const data = this.dataSource.data.filter(emp => {
+    const filteredData = this.allEmployees.filter(emp => {
       const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
       const assessmentMatch =
         this.selectedAssessment === 'All' ||
@@ -90,17 +92,24 @@ export class FastrackComponent implements OnInit, AfterViewInit {
       return designationMatch && assessmentMatch && certificationMatch;
     });
 
-    this.dataSource.data = data;
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.data = filteredData;
+    
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
   refreshData() {
+    this.selectedDesignation = 'All';
+    this.selectedAssessment = 'All';
+    this.selectedCertification = 'All';
     this.loadAllData();
-    this.dataSource.paginator = this.paginator;
-    this.applyFilters()
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
-   openAddDialog() {
+  openAddDialog() {
     const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
       width: '70%',
       height: '60%',
@@ -109,18 +118,18 @@ export class FastrackComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dataSource.data = [...this.dataSource.data, result];
+        this.allEmployees = [...this.allEmployees, result];
         this.applyFilters();
       }
     });
   }
-  openEmployeeDetails(employee: any): void {
-  this.dialog.open(EmployeeDetailsDialogComponent, {
-    width: '90%',
-    height: '70%',
-    data: employee,
-    panelClass: 'custom-dialog-container'
-  });
 
-}
+  openEmployeeDetails(employee: any): void {
+    this.dialog.open(EmployeeDetailsDialogComponent, {
+      width: '90%',
+      height: '70%',
+      data: employee,
+      panelClass: 'custom-dialog-container'
+    });
+  }
 }
