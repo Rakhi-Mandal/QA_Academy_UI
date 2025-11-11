@@ -6,6 +6,7 @@ import { CalendarDataService } from '../../shared/services/calendar-data.service
 import { CalendarItem, CalendarStats } from '../../shared/models/calendar.models';
 import { Observable } from 'rxjs';
 import { FormSubmissionDialogComponent, SubmissionResult } from '../../shared/components/form-submission-dialog/form-submission-dialog.component';
+import { AuthService } from '../../shared/services/auth.service';
 
 interface CalendarDay {
   date: Date;
@@ -108,7 +109,8 @@ export class EmployeeCalendarComponent implements OnInit {
 
   constructor(
     private calendarService: CalendarDataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -117,10 +119,11 @@ export class EmployeeCalendarComponent implements OnInit {
   }
 
   loadData(): void {
-    this.calendarItems$ = this.calendarService.getFilteredItems$(this.activeFilter);
-    this.stats$ = this.calendarService.getCalendarStats$();
+    const employeeId = this.authService.currentUserValue?.employeeId;
+    this.calendarItems$ = this.calendarService.getFilteredItems$(this.activeFilter, employeeId);
+    this.stats$ = this.calendarService.getCalendarStats$(employeeId);
     
-    this.calendarService.getAllCalendarItems$().subscribe((items: CalendarItem[]) => {
+    this.calendarService.getAllCalendarItems$(employeeId).subscribe((items: CalendarItem[]) => {
       this.allItems = items;
       this.generateCalendar();
     });

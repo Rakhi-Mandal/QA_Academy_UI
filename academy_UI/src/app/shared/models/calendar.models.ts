@@ -28,6 +28,7 @@ export interface CalendarItem {
   tools?: string[];
   platform?: string;
   category?: string;
+  assignedTo?: string;
   isCompleted?: boolean;
   completedAt?: Date | null;
   score?: number | null;

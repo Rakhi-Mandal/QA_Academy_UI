@@ -11,12 +11,15 @@ import { FastrackComponent } from './pages/dashboard/fastrack/fastrack.component
 import { CalendarComponent } from './pages/calendar/calendar.component';
 import { EmployeeCalendarComponent } from './pages/employee-calendar/employee-calendar.component';
 import { AdminDefaultDashboardComponent } from './pages/admin-default-dashboard/admin-default-dashboard.component';
+import { authGuard } from './shared/guards/auth.guard';
+import { adminGuard, employeeGuard } from './shared/guards/role.guard';
 
 
 export const routes: Routes = [
   {
     path:'',
     component:AppLayoutComponent,
+    canActivate: [authGuard],
     children:[
       // Default redirect
       {
@@ -29,30 +32,35 @@ export const routes: Routes = [
       {
         path: 'admin/dashboard',
         component: AdminDefaultDashboardComponent,
+        canActivate: [adminGuard],
         title: 'Dashboard Overview | Admin Dashboard',
         data: { role: 'admin' }
       },
       {
         path: 'admin/track1',
         component: FastrackComponent,
+        canActivate: [adminGuard],
         title: 'Fastrack Batch | Admin Dashboard',
         data: { role: 'admin' }
       },
       {
         path: 'admin/track2',
         component: FastrackComponent,
+        canActivate: [adminGuard],
         title: 'Advanced Track Batch | Admin Dashboard',
         data: { role: 'admin' }
       },
       {
         path: 'admin/track3',
         component: FastrackComponent,
+        canActivate: [adminGuard],
         title: 'Mastery Program Batch | Admin Dashboard',
         data: { role: 'admin' }
       },
       {
         path: 'admin/calendar',
         component: CalendarComponent,
+        canActivate: [adminGuard],
         title: 'Assessments & Certifications Calendar | Admin Dashboard',
         data: { role: 'admin' }
       },
@@ -61,12 +69,14 @@ export const routes: Routes = [
       {
         path: 'employee/profile',
         component: ProfileComponent,
+        canActivate: [employeeGuard],
         title: 'My Profile | Employee Dashboard',
         data: { role: 'employee' }
       },
       {
         path: 'employee/calendar',
         component: EmployeeCalendarComponent,
+        canActivate: [employeeGuard],
         title: 'My Assessments & Certifications | Employee Dashboard',
         data: { role: 'employee' }
       },

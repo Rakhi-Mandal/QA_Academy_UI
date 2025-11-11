@@ -12,7 +12,8 @@ export const MOCK_ASSESSMENTS: AssessmentItem[] = [
     status: CalendarStatus.ASSIGNED,
     tools: ['ProProfs'],
     platform: 'Online QA quizzes',
-    category: 'QA Foundation'
+    category: 'QA Foundation',
+    assignedTo: 'EMP001'
   },
   {
     id: 'assessment-1b',
@@ -25,7 +26,8 @@ export const MOCK_ASSESSMENTS: AssessmentItem[] = [
     status: CalendarStatus.ASSIGNED,
     tools: ['Adaface'],
     platform: 'For QA',
-    category: 'QA Foundation'
+    category: 'QA Foundation',
+    assignedTo: 'EMP001'
   },
   {
     id: 'assessment-1c',
@@ -38,7 +40,8 @@ export const MOCK_ASSESSMENTS: AssessmentItem[] = [
     status: CalendarStatus.ASSIGNED,
     tools: ['TestLodge'],
     platform: 'Scenario-based',
-    category: 'QA Foundation'
+    category: 'QA Foundation',
+    assignedTo: 'EMP001'
   },
   {
     id: 'assessment-2a',
