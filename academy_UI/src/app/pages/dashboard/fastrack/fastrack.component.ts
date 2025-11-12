@@ -73,17 +73,17 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.loadAllData();
+    // Don't load data here - wait for view to initialize
   }
 
   ngAfterViewInit() {
+    // Connect paginator first
     this.dataSource.paginator = this.paginator;
-    // Trigger change detection after view init to ensure paginator works
+    
+    // Then load data after a short delay to ensure paginator is ready
     setTimeout(() => {
-      if (this.paginator && this.dataSource.data.length > 0) {
-        this.paginator.firstPage();
-      }
-    });
+      this.loadAllData();
+    }, 0);
   }
 
   loadAllData() {

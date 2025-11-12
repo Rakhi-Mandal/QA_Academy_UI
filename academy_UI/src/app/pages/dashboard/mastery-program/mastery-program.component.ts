@@ -60,11 +60,17 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
   selectedCertification = 'All';
 
   ngOnInit() {
-    this.loadAllData();
+    // Don't load data here - wait for view to initialize
   }
 
   ngAfterViewInit() {
+    // Connect paginator first
     this.dataSource.paginator = this.paginator;
+    
+    // Then load data after a short delay to ensure paginator is ready
+    setTimeout(() => {
+      this.loadAllData();
+    }, 0);
   }
 
   
