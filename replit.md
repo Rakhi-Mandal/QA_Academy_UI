@@ -26,9 +26,13 @@ I want to prioritize iterative development. Please ask before making major archi
 ### Technical Implementations
 - **Authentication System**:
     - Complete role-based access control with `AuthService` for login, signup, logout, and session management.
+    - **Admin Login**: Credentials (admin@feuji.com / admin1) validated against hardcoded values, redirects to `/admin/dashboard`.
+    - **Employee Login**: Email validated against backend API (`/api/employees/get-all`), automatically logs in valid employees, redirects to `/employee/profile`.
+    - Employee ID stored in `localStorage` (key: `employeeId`) for fetching employee-specific data across the application.
     - `user.model.ts` defines admin/employee roles.
     - `auth.guard.ts` and `role.guard.ts` protect routes based on authentication status and user roles.
     - Session persistence via `localStorage` and reactive user state management using `BehaviorSubject`.
+    - Backend integration via `HttpClient` for employee data validation.
 - **Role-Based Views and Navigation**:
     - Separate admin and employee dashboards and features.
     - Dynamic sidebar navigation (`app-sidebar/`) switches menu items based on the current route and user role.
@@ -45,12 +49,14 @@ I want to prioritize iterative development. Please ask before making major archi
 - **Project Structure**: Organized into `src/app/pages`, `src/app/shared` (guards, layout, components, services, models), and `app.routes.ts`.
 
 ### Feature Specifications
-- User login, signup with role selection, and logout.
+- **Dynamic Authentication**: Admin and employee login with backend validation for employees.
+- **Admin Credentials**: admin@feuji.com / admin1
+- **Employee Access**: Uses registered email from backend employee database (password validation disabled for employees).
 - Protected routes for admin and employee roles.
 - Dynamic sidebar navigation based on user role.
 - Comprehensive admin dashboard with key metrics, activity feeds, and charts.
 - Employee profile and a personal calendar for tracking assessments and certifications.
-- Batch management (FastTrack, Advanced Track, Mastery Program) for admins.
+- **Batch Management** (FastTrack, Advanced Track, Mastery Program) for admins with working pagination (5 items default, page size options: 5, 10, 20).
 - Full-featured assessment and certification tracking with submission workflows.
 - 100+ UI elements, charts, form components.
 - Dark mode support.
