@@ -78,6 +78,12 @@ export class FastrackComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    // Trigger change detection after view init to ensure paginator works
+    setTimeout(() => {
+      if (this.paginator && this.dataSource.data.length > 0) {
+        this.paginator.firstPage();
+      }
+    });
   }
 
   loadAllData() {
@@ -105,8 +111,9 @@ export class FastrackComponent implements OnInit, AfterViewInit {
           this.designations = [...new Set(employees.map(e => e.designation))];
           this.pods = [...new Set(employees.map(e => e.pod))];
 
-          // Reset paginator to first page after loading new data
+          // Reconnect paginator after data change
           if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
             this.paginator.firstPage();
           }
 
@@ -163,8 +170,9 @@ export class FastrackComponent implements OnInit, AfterViewInit {
 
     this.dataSource.data = filteredData;
     
-    // Reset to first page when filters change
+    // Reconnect and reset paginator when filters change
     if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
       this.paginator.firstPage();
     }
   }
