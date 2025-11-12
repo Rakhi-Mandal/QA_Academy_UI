@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -39,7 +39,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './advanced-track.component.html',
   styleUrl: './advanced-track.component.scss'
 })
-export class AdvancedTrackComponent implements OnInit, AfterViewInit {
+export class AdvancedTrackComponent implements OnInit {
   
   displayedColumns = [
     'slNo',
@@ -66,7 +66,15 @@ pods: string[] = [];
   selectedAssessment = 'All';
   selectedCertification = 'All';
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  paginator!: MatPaginator;
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator) {
+    this.paginator = p;
+    this.dataSource.paginator = p;
+    if (p) {
+      p.firstPage();
+    }
+  }
 
   constructor(
     public dialog: MatDialog,
@@ -75,17 +83,7 @@ pods: string[] = [];
   ) {}
 
   ngOnInit() {
-    // Don't load data here - wait for view to initialize
-  }
-
-  ngAfterViewInit() {
-    // Connect paginator first
-    this.dataSource.paginator = this.paginator;
-    
-    // Then load data after a short delay to ensure paginator is ready
-    setTimeout(() => {
-      this.loadAllData();
-    }, 0);
+    this.loadAllData();
   }
 
   loadAllData() {

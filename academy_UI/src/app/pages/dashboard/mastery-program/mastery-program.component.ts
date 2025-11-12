@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -38,7 +38,7 @@ import { EmployeeService, Employee } from '../../../shared/services/employee.ser
   templateUrl: './mastery-program.component.html',
   styleUrl: './mastery-program.component.scss'
 })
-export class MasteryProgramComponent implements OnInit, AfterViewInit {
+export class MasteryProgramComponent implements OnInit {
 
   displayedColumns = ['slNo', 'employeeId', 'name', 'email', 'designation', 'assessment', 'certification', 'action'];
   dataSource = new MatTableDataSource<any>([]);
@@ -52,7 +52,15 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
     private snackBar: MatSnackBar
   ) {}
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  paginator!: MatPaginator;
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator) {
+    this.paginator = p;
+    this.dataSource.paginator = p;
+    if (p) {
+      p.firstPage();
+    }
+  }
 
   selectedBatch = 3; // Default batch
   selectedDesignation = 'All';
@@ -60,17 +68,7 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
   selectedCertification = 'All';
 
   ngOnInit() {
-    // Don't load data here - wait for view to initialize
-  }
-
-  ngAfterViewInit() {
-    // Connect paginator first
-    this.dataSource.paginator = this.paginator;
-    
-    // Then load data after a short delay to ensure paginator is ready
-    setTimeout(() => {
-      this.loadAllData();
-    }, 0);
+    this.loadAllData();
   }
 
   
@@ -97,11 +95,6 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
           this.allEmployees = [...employees];
           this.dataSource.data = [...employees];
           this.designations = [...new Set(employees.map(e => e.designation))];
-
-          // Reset paginator to first page after loading new data
-          if (this.paginator) {
-            this.paginator.firstPage();
-          }
 
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,

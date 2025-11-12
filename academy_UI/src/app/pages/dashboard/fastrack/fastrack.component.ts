@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -38,7 +38,7 @@ import { EmployeeService } from '../../../shared/services/employee.service';
     MatSnackBarModule
   ]
 })
-export class FastrackComponent implements OnInit, AfterViewInit {
+export class FastrackComponent implements OnInit {
  
   displayedColumns = [
     'slNo',
@@ -64,7 +64,15 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   selectedAssessment = 'All';
   selectedCertification = 'All';
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  paginator!: MatPaginator;
+
+  @ViewChild(MatPaginator) set matPaginator(p: MatPaginator) {
+    this.paginator = p;
+    this.dataSource.paginator = p;
+    if (p) {
+      p.firstPage();
+    }
+  }
 
   constructor(
     public dialog: MatDialog,
@@ -73,17 +81,7 @@ export class FastrackComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    // Don't load data here - wait for view to initialize
-  }
-
-  ngAfterViewInit() {
-    // Connect paginator first
-    this.dataSource.paginator = this.paginator;
-    
-    // Then load data after a short delay to ensure paginator is ready
-    setTimeout(() => {
-      this.loadAllData();
-    }, 0);
+    this.loadAllData();
   }
 
   loadAllData() {
@@ -111,11 +109,6 @@ export class FastrackComponent implements OnInit, AfterViewInit {
           this.designations = [...new Set(employees.map(e => e.designation))];
           this.pods = [...new Set(employees.map(e => e.pod))];
 
-          // Reconnect paginator after data change
-          if (this.paginator) {
-            this.dataSource.paginator = this.paginator;
-            this.paginator.firstPage();
-          }
 
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
