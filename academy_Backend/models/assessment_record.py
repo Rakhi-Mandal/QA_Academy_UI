@@ -186,16 +186,12 @@ def get_recent_records(limit: int = 2) -> list[dict]:
         cursor = connection.cursor(dictionary=True)
         query = """
             SELECT 
-                ar.Record_ID,
-                ar.Upload_Time,
-                ar.Document,
-                ar.Mark_Secured,
-                ar.Assessment_ID,
-                ar.Employee_ID,
-                er.Employee_Name,
-                er.Designation
+                e.Employee_Name,
+                a.Name AS Assessment_Name,
+                ar.Upload_Time
             FROM assessment_record ar
-            LEFT JOIN employee_record er ON ar.Employee_ID = er.Employee_ID
+            LEFT JOIN assessment_table a ON ar.Assessment_ID = a.Assessment_ID
+            LEFT JOIN employee_record e ON ar.Employee_ID = e.Employee_ID
             ORDER BY ar.Upload_Time DESC
             LIMIT %s
         """

@@ -289,7 +289,7 @@ def delete_record(record_id: int) -> Tuple[bool, str]:
         if conn: close_db_connection(conn)
 
 
-def get_last_n_certification_records(limit: int = 3) -> List[Dict]:
+def get_last_n_certification_records(limit: int = 2) -> List[Dict]:
     """Fetch the N most recent certification records with joins and serialize types."""
     
     # --- CRITICAL FIX: Initialize variables outside the try block ---

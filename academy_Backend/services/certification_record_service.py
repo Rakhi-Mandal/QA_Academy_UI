@@ -125,10 +125,10 @@ def delete_record(record_id: int) -> Dict:
         return error_response(message=f"Error deleting record: {str(e)}", status_code=500)
     
 def get_recent_certification_activity() -> Dict:
-    """Get the 3 most recent certification completions for the dashboard."""
+    """Get the 2 most recent certification completions for the dashboard."""
     try:
         # Calls the model function
-        records = model.get_last_n_certification_records(limit=3)
+        records = model.get_last_n_certification_records(limit=2)
         
         if records is None:
             return error_response(message="Failed to retrieve recent activity records", status_code=500)

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { HttpClientModule } from '@angular/common/http';
 import { SafeHtmlPipe } from '../../shared/pipe/safe-html.pipe';
 import {
   ApexAxisChartSeries,
@@ -14,6 +15,11 @@ import {
   ApexTooltip,
 } from 'ng-apexcharts';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { 
+  AdminDashboardService, 
+  RecentAssessment, 
+  RecentCourseCompletion 
+} from '../../shared/services/admin-dashboard.service';
 
 interface StatCard {
   title: string;
@@ -29,6 +35,7 @@ interface Activity {
   target: string;
   time: string;
   icon: string;
+  type: 'assessment' | 'course';
 }
 
 interface TopPerformer {
@@ -40,7 +47,8 @@ interface TopPerformer {
 
 @Component({
   selector: 'app-admin-default-dashboard',
-  imports: [CommonModule, NgApexchartsModule, SafeHtmlPipe],
+  imports: [CommonModule, NgApexchartsModule, SafeHtmlPipe, HttpClientModule],
+  providers: [AdminDashboardService],
   templateUrl: './admin-default-dashboard.component.html',
   styleUrl: './admin-default-dashboard.component.scss',
   animations: [
@@ -76,13 +84,6 @@ export class AdminDefaultDashboardComponent implements OnInit {
       iconBg: 'bg-blue-50',
       trend: 'up'
     },
-    // {
-    //   title: 'Recent Activity',
-    //   value: 28,
-    //   icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>`,
-    //   iconBg: 'bg-green-50',
-    //   trend: 'up'
-    // },
     {
       title: 'Certifications',
       value: 12,
@@ -99,36 +100,9 @@ export class AdminDefaultDashboardComponent implements OnInit {
     }
   ];
 
-  recentActivities: Activity[] = [
-    {
-      employee: 'John Doe',
-      action: 'completed certification',
-      target: 'AWS Cloud',
-      time: '2 hours ago',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path></svg>`
-    },
-    {
-      employee: 'Jane Smith',
-      action: 'started assessment',
-      target: 'React Advanced',
-      time: '4 hours ago',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path></svg>`
-   },
-    {
-      employee: 'Mike Johnson',
-      action: 'achieved 95% score',
-      target: 'JavaScript',
-      time: '6 hours ago',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path></svg>`
-   },
-    {
-      employee: 'Sarah Williams',
-      action: 'joined project',
-      target: 'Mobile App',
-      time: '8 hours ago',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"></path></svg>`
-    }
-  ];
+  recentActivities: Activity[] = [];
+  isLoadingActivities = true;
+  activitiesError: string | null = null;
 
   topPerformers: TopPerformer[] = [
     { name: 'Alice Johnson', department: 'Engineering', score: 98, badge: '🏆' },
@@ -207,8 +181,137 @@ export class AdminDefaultDashboardComponent implements OnInit {
     }
   };
 
+  constructor(private dashboardService: AdminDashboardService) {}
+
   ngOnInit(): void {
-    // Component initialization
+    console.log('Dashboard component initialized');
+    this.loadRecentActivities();
+  }
+
+  loadRecentActivities(): void {
+    console.log('Loading recent activities...');
+    this.isLoadingActivities = true;
+    this.activitiesError = null;
+
+    // Fetch assessments and courses separately with individual error handling
+    const assessments$ = this.dashboardService.getRecentAssessments(2);
+    const courses$ = this.dashboardService.getRecentCourseCompletions(2);
+
+    let assessmentActivities: Activity[] = [];
+    let courseActivities: Activity[] = [];
+    let completedRequests = 0;
+    let hasError = false;
+
+    // Handle assessments
+    assessments$.subscribe({
+      next: (data) => {
+        console.log('✅ Assessments loaded:', data);
+        assessmentActivities = this.mapAssessmentsToActivities(data);
+        completedRequests++;
+        this.combineActivities(assessmentActivities, courseActivities, completedRequests, hasError);
+      },
+      error: (error) => {
+        console.error('❌ Error loading assessments:', error);
+        hasError = true;
+        completedRequests++;
+        this.combineActivities(assessmentActivities, courseActivities, completedRequests, hasError);
+      }
+    });
+
+    // Handle courses
+    courses$.subscribe({
+      next: (data) => {
+        console.log('✅ Courses loaded:', data);
+        courseActivities = this.mapCoursesToActivities(data);
+        completedRequests++;
+        this.combineActivities(assessmentActivities, courseActivities, completedRequests, hasError);
+      },
+      error: (error) => {
+        console.error('❌ Error loading courses:', error);
+        hasError = true;
+        completedRequests++;
+        this.combineActivities(assessmentActivities, courseActivities, completedRequests, hasError);
+      }
+    });
+  }
+
+  private combineActivities(
+    assessments: Activity[], 
+    courses: Activity[], 
+    completedRequests: number, 
+    hasError: boolean
+  ): void {
+    // Wait for both requests to complete
+    if (completedRequests < 2) {
+      return;
+    }
+
+    // Combine available activities
+    this.recentActivities = [...assessments, ...courses]
+      .sort((a, b) => this.compareActivityTimes(a, b));
+
+    this.isLoadingActivities = false;
+
+    // Set error message only if both failed
+    if (assessments.length === 0 && courses.length === 0 && hasError) {
+      this.activitiesError = 'Failed to load recent activities. Please check your backend connection.';
+    } else {
+      this.activitiesError = null;
+    }
+
+    console.log('📊 Final activities:', this.recentActivities);
+  }
+
+  private mapAssessmentsToActivities(assessments: RecentAssessment[]): Activity[] {
+    return assessments.map(assessment => ({
+      employee: assessment.Employee_Name,
+      action: 'submitted assessment',
+      target: assessment.Assessment_Name,
+      time: assessment.Upload_Time,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`,
+      type: 'assessment' as const
+    }));
+  }
+
+  private mapCoursesToActivities(courses: RecentCourseCompletion[]): Activity[] {
+    return courses.map(course => ({
+      employee: course.Employee_Name,
+      action: 'completed course',
+      target: course.Course_Name,
+      time: course.Completion_Datetime,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`,
+      type: 'course' as const
+    }));
+  }
+
+  private compareActivityTimes(a: Activity, b: Activity): number {
+    const timeA = new Date(a.time).getTime();
+    const timeB = new Date(b.time).getTime();
+    return timeB - timeA; // Most recent first
+  }
+
+  private formatUploadTime(uploadTime: string): string {
+    const now = new Date();
+    const uploadDate = new Date(uploadTime);
+    const diffMs = now.getTime() - uploadDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) {
+      return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    } else if (diffDays < 7) {
+      return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    } else {
+      return uploadDate.toLocaleDateString();
+    }
+  }
+
+  // Getter to format time for display in template
+  getFormattedTime(time: string): string {
+    return this.formatUploadTime(time);
   }
 
   addEmployee(): void {

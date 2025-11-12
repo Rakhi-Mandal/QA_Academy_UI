@@ -27,7 +27,31 @@
       <div class="card-header">
         <h2 class="card-title">Recent Activity</h2>
       </div>
-      <div class="activity-list">
+      
+      <!-- Debug Info (remove after testing) -->
+      <!-- <div style="padding: 10px; background: #f0f0f0; margin: 10px; font-size: 12px;">
+        <p>Loading: {{ isLoadingActivities }}</p>
+        <p>Error: {{ activitiesError }}</p>
+        <p>Activities Count: {{ recentActivities.length }}</p>
+      </div> -->
+
+      <!-- Loading State -->
+      <div class="activity-list" *ngIf="isLoadingActivities">
+        <div class="loading-state" style="padding: 20px; text-align: center; color: #666;">
+          <p>Loading recent activities...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div class="activity-list" *ngIf="activitiesError && !isLoadingActivities">
+        <div class="error-state" style="padding: 20px; text-align: center; color: #e74c3c;">
+          <p>{{ activitiesError }}</p>
+          <button (click)="loadRecentActivities()" style="margin-top: 10px; padding: 8px 16px; background: #465fff; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+        </div>
+      </div>
+
+      <!-- Activity List -->
+      <div class="activity-list" *ngIf="!isLoadingActivities && !activitiesError">
         <div class="activity-item" *ngFor="let activity of recentActivities">
           <div class="activity-icon-wrapper">
             <div class="activity-icon" [innerHTML]="activity.icon | safeHtml"></div>
@@ -39,6 +63,9 @@
             </p>
             <p class="activity-time">{{ activity.time }}</p>
           </div>
+        </div>
+        <div class="empty-state" *ngIf="recentActivities.length === 0" style="padding: 20px; text-align: center; color: #999;">
+          <p>No recent activities found</p>
         </div>
       </div>
     </div>

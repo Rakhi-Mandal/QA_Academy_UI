@@ -7,6 +7,43 @@ from services import courses_service
 
 router = APIRouter()
 
+@router.get("/recent-completions")
+def get_recent_completions(
+    limit: int = Query(
+        2, 
+        ge=1, 
+        le=10, 
+        description="Number of recent completions to retrieve (1-10)"
+    )
+):
+    """
+    Get recent course completions (Course Name and Employee Name only)
+    
+    Query Parameters:
+    - **limit**: Number of recent completions (default: 2, max: 10)
+    
+    Returns:
+    - List of recent course completions with course name and employee name
+    
+    Example Response:
+    {
+        "success": true,
+        "data": [
+            {
+                "Course_Name": "Python Basics",
+                "Employee_Name": "John Doe",
+                "Completion_Datetime": "2024-11-17T16:40:00"
+            },
+            {
+                "Course_Name": "Advanced Python",
+                "Employee_Name": "Jane Smith",
+                "Completion_Datetime": "2024-11-16T13:15:00"
+            }
+        ],
+        "message": "Retrieved 2 recent completion(s) successfully"
+    }
+    """
+    return courses_service.get_recent_completions(limit=limit)
 
 @router.get("/get_all")
 def get_all_courses(
@@ -47,43 +84,6 @@ def get_course_count():
     return courses_service.get_course_count()
 
 
-@router.get("/recent-completions")
-def get_recent_completions(
-    limit: int = Query(
-        2, 
-        ge=1, 
-        le=10, 
-        description="Number of recent completions to retrieve (1-10)"
-    )
-):
-    """
-    Get recent course completions (Course Name and Employee Name only)
-    
-    Query Parameters:
-    - **limit**: Number of recent completions (default: 2, max: 10)
-    
-    Returns:
-    - List of recent course completions with course name and employee name
-    
-    Example Response:
-    {
-        "success": true,
-        "data": [
-            {
-                "Course_Name": "Python Basics",
-                "Employee_Name": "John Doe",
-                "Completion_Datetime": "2024-11-17T16:40:00"
-            },
-            {
-                "Course_Name": "Advanced Python",
-                "Employee_Name": "Jane Smith",
-                "Completion_Datetime": "2024-11-16T13:15:00"
-            }
-        ],
-        "message": "Retrieved 2 recent completion(s) successfully"
-    }
-    """
-    return courses_service.get_recent_completions(limit=limit)
 
 
 @router.get("/{course_id}")
