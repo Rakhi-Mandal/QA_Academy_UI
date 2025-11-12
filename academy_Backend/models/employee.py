@@ -56,11 +56,56 @@ def get_employees_by_batch(batch_code: int) -> List[Dict]:
     try:
         cursor = connection.cursor(dictionary=True)
         query = """
-            SELECT e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation,
-                   e.POD_ID, p.POD, p.Batch_Code
-            FROM employee_record e
-            INNER JOIN pod p ON e.POD_ID = p.POD_ID
-            WHERE p.Batch_Code = %s
+WITH total_counts AS (
+    SELECT 
+        COUNT(*) AS total_assessments
+        FROM assessment_table
+    ),
+    cert_counts AS (
+        SELECT 
+        COUNT(*) AS total_certifications
+        FROM certification_table
+    ),
+    course_counts AS (
+        SELECT 
+        COUNT(*) AS total_courses
+        FROM courses_table
+    ),
+employee_counts AS (
+    SELECT 
+        e.Employee_ID,
+        e.Employee_Name,
+        e.Employee_Email,
+        e.Designation,
+        p.POD,
+        p.Batch_Code,
+        COUNT(DISTINCT ar.Assessment_ID) AS assessment_count,
+        COUNT(DISTINCT cr.Certification_ID) AS certification_count,
+        COUNT(DISTINCT cor.Course_ID) AS course_count
+    FROM employee_record e
+    INNER JOIN pod p ON e.POD_ID = p.POD_ID
+    LEFT JOIN assessment_record ar ON e.Employee_ID = ar.Employee_ID
+    LEFT JOIN certification_record cr ON e.Employee_ID = cr.Employee_ID
+    LEFT JOIN courses_record cor ON e.Employee_ID = cor.Employee_ID
+    WHERE p.Batch_Code = %s
+    GROUP BY e.Employee_ID, e.Employee_Name, e.Employee_Email, e.Designation, p.POD, p.Batch_Code
+)
+SELECT 
+    ec.Employee_ID,
+    ec.Employee_Name,
+    ec.Employee_Email,
+    ec.Designation,
+    ec.POD,
+    ec.Batch_Code,
+    ROUND((ec.assessment_count / NULLIF(t.total_assessments, 0)) * 100, 2) AS assessment_completion_percent,
+    ROUND((ec.certification_count / NULLIF(c.total_certifications, 0)) * 100, 2) AS certification_completion_percent,
+    ROUND((ec.course_count / NULLIF(crs.total_courses, 0)) * 100, 2) AS course_completion_percent
+FROM employee_counts ec
+CROSS JOIN total_counts t
+CROSS JOIN cert_counts c
+CROSS JOIN course_counts crs
+ORDER BY ec.Employee_ID;
+
         """
         cursor.execute(query, (batch_code,))
         employees = cursor.fetchall()

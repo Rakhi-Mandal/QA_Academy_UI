@@ -11,7 +11,9 @@ export interface Employee {
   POD: string;
   Batch_Code: number;
   assessment?: number;
-  certification?: number;
+  course_completion_percent ?: number;
+  certification_completion_percent ?: number;
+  assessment_completion_percent ?: number;
 }
 
 export interface EmployeeResponse {

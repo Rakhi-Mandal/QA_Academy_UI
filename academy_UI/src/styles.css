@@ -877,3 +877,29 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .submission-dialog-panel {
   z-index: 1001 !important;
 }
+/* .custom-dialog-container .mat-mdc-dialog-surface {
+  border-radius: 5rem;
+  overflow: visible;
+}
+
+.custom-dialog-container .outside-close-btn {
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  inset: -20px -30px auto auto;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.custom-dialog-container .outside-close-btn:hover {
+  transform: scale(1.1);
+  background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+  .custom-dialog-container .outside-close-btn {
+    inset: -20px -20px auto auto;
+  }
+} */

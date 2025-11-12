@@ -36,7 +36,7 @@ import { EmployeeService, Employee } from '../../../shared/services/employee.ser
     MatSnackBarModule
   ],
   templateUrl: './mastery-program.component.html',
-  styleUrl: './mastery-program.component.css'
+  styleUrl: './mastery-program.component.scss'
 })
 export class MasteryProgramComponent implements OnInit, AfterViewInit {
 
@@ -67,32 +67,31 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  
   loadAllData() {
     this.isLoading = true;
-    
-    // Replace with your actual batch code
+
     this.employeeService.getEmployeesByBatch(this.selectedBatch).subscribe({
       next: (response) => {
         console.log('API Response:', response);
-        
+
         if (response.success && response.data) {
-          // Map API response to match your table structure
           const employees = response.data.map(emp => ({
             employeeId: emp.Employee_ID,
             name: emp.Employee_Name,
             email: emp.Employee_Email,
             designation: emp.Designation,
-            podId: emp.POD_ID,
             pod: emp.POD,
             batchCode: emp.Batch_Code,
-            assessment: emp.assessment || 0, // Default to 0 if not available
-            certification: emp.certification || 0 // Default to 0 if not available
+            assessment_progress: emp.assessment_completion_percent || 0,
+            certification_progress: emp.certification_completion_percent || 0,
+            course_progress: emp.course_completion_percent || 0
           }));
 
           this.allEmployees = [...employees];
           this.dataSource.data = [...employees];
           this.designations = [...new Set(employees.map(e => e.designation))];
-          
+
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -113,46 +112,45 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Method to change batch dynamically
-  onBatchChange(batchCode: number) {
-    this.selectedBatch = batchCode;
-    this.loadAllData();
-  }
-
-  applyFilters() {
-    const filteredData = this.allEmployees.filter(emp => {
-      const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
-      const assessmentMatch =
-        this.selectedAssessment === 'All' ||
-        (this.selectedAssessment === 'Below 50%' && emp.assessment < 50) ||
-        (this.selectedAssessment === '50%-80%' && emp.assessment >= 50 && emp.assessment <= 80) ||
-        (this.selectedAssessment === 'Above 80%' && emp.assessment > 80);
-      const certificationMatch =
-        this.selectedCertification === 'All' ||
-        (this.selectedCertification === 'Below 50%' && emp.certification < 50) ||
-        (this.selectedCertification === '50%-80%' && emp.certification >= 50 && emp.certification <= 80) ||
-        (this.selectedCertification === 'Above 80%' && emp.certification > 80);
-
-      return designationMatch && assessmentMatch && certificationMatch;
-    });
-
-    this.dataSource.data = filteredData;
-    
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-  }
-
+  /** 🔄 Refresh Data */
   refreshData() {
     this.selectedDesignation = 'All';
     this.selectedAssessment = 'All';
     this.selectedCertification = 'All';
     this.loadAllData();
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
+    if (this.paginator) this.paginator.firstPage();
   }
 
+  /** 🔍 Apply Filters */
+  applyFilters() {
+    const filteredData = this.allEmployees.filter(emp => {
+      const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
+      const assessmentMatch =
+        this.selectedAssessment === 'All' ||
+        (this.selectedAssessment === 'Below 50%' && emp.assessment_progress < 50) ||
+        (this.selectedAssessment === '50%-80%' && emp.assessment_progress >= 50 && emp.assessment_progress <= 80) ||
+        (this.selectedAssessment === 'Above 80%' && emp.assessment_progress > 80);
+
+      const certificationMatch =
+        this.selectedCertification === 'All' ||
+        (this.selectedCertification === 'Below 50%' && emp.certification_progress < 50) ||
+        (this.selectedCertification === '50%-80%' && emp.certification_progress >= 50 && emp.certification_progress <= 80) ||
+        (this.selectedCertification === 'Above 80%' && emp.certification_progress > 80);
+
+      return designationMatch && assessmentMatch && certificationMatch;
+    });
+
+    this.dataSource.data = filteredData;
+    if (this.paginator) this.paginator.firstPage();
+  }
+
+  /** 🔄 Change batch dynamically */
+  onBatchChange(batchCode: number) {
+    this.selectedBatch = batchCode;
+    this.loadAllData();
+  }
+
+  /** ➕ Add Employee Dialog */
   openAddDialog() {
     const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
       width: '70%',

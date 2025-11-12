@@ -37,27 +37,42 @@ import { ActivatedRoute } from '@angular/router';
     MatSnackBarModule
   ],
   templateUrl: './advanced-track.component.html',
-  styleUrl: './advanced-track.component.css'
+  styleUrl: './advanced-track.component.scss'
 })
 export class AdvancedTrackComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['slNo', 'employeeId', 'name', 'email', 'designation', 'assessment', 'certification', 'action'];
+  
+  displayedColumns = [
+    'slNo',
+    'employeeId',
+    'name',
+    'email',
+    'designation',
+    'assessment_progress',
+    'certification_progress',
+    'course_progress',
+    'action'
+  ];
+
   dataSource = new MatTableDataSource<any>([]);
   allEmployees: any[] = [];
   designations: string[] = [];
   isLoading = false;
-  
-  constructor(
-    public dialog: MatDialog,
-    private employeeService: EmployeeService,
-    private snackBar: MatSnackBar,private route: ActivatedRoute
-  ) {}
+  selectedPod = 'All';
+pods: string[] = [];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   selectedBatch = 2; // Default batch
   selectedDesignation = 'All';
   selectedAssessment = 'All';
   selectedCertification = 'All';
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  constructor(
+    public dialog: MatDialog,
+    private employeeService: EmployeeService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.loadAllData();
@@ -69,30 +84,30 @@ export class AdvancedTrackComponent implements OnInit, AfterViewInit {
 
   loadAllData() {
     this.isLoading = true;
-    
-    // Replace with your actual batch code
+
     this.employeeService.getEmployeesByBatch(this.selectedBatch).subscribe({
       next: (response) => {
         console.log('API Response:', response);
-        
+
         if (response.success && response.data) {
-          // Map API response to match your table structure
           const employees = response.data.map(emp => ({
             employeeId: emp.Employee_ID,
             name: emp.Employee_Name,
             email: emp.Employee_Email,
             designation: emp.Designation,
-            podId: emp.POD_ID,
             pod: emp.POD,
             batchCode: emp.Batch_Code,
-            assessment: emp.assessment || 0, // Default to 0 if not available
-            certification: emp.certification || 0 // Default to 0 if not available
+            assessment_progress: emp.assessment_completion_percent || 0,
+            certification_progress: emp.certification_completion_percent || 0,
+            course_progress: emp.course_completion_percent || 0
           }));
 
           this.allEmployees = [...employees];
           this.dataSource.data = [...employees];
           this.designations = [...new Set(employees.map(e => e.designation))];
-          
+          this.pods = [...new Set(employees.map(e => e.pod))];
+
+
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -113,59 +128,42 @@ export class AdvancedTrackComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Method to change batch dynamically
-  onBatchChange(batchCode: number) {
-    this.selectedBatch = batchCode;
-    this.loadAllData();
-  }
-
-  applyFilters() {
-    const filteredData = this.allEmployees.filter(emp => {
-      const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
-      const assessmentMatch =
-        this.selectedAssessment === 'All' ||
-        (this.selectedAssessment === 'Below 50%' && emp.assessment < 50) ||
-        (this.selectedAssessment === '50%-80%' && emp.assessment >= 50 && emp.assessment <= 80) ||
-        (this.selectedAssessment === 'Above 80%' && emp.assessment > 80);
-      const certificationMatch =
-        this.selectedCertification === 'All' ||
-        (this.selectedCertification === 'Below 50%' && emp.certification < 50) ||
-        (this.selectedCertification === '50%-80%' && emp.certification >= 50 && emp.certification <= 80) ||
-        (this.selectedCertification === 'Above 80%' && emp.certification > 80);
-
-      return designationMatch && assessmentMatch && certificationMatch;
-    });
-
-    this.dataSource.data = filteredData;
-    
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-  }
-
   refreshData() {
     this.selectedDesignation = 'All';
     this.selectedAssessment = 'All';
     this.selectedCertification = 'All';
     this.loadAllData();
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
+    if (this.paginator) this.paginator.firstPage();
   }
 
-  openAddDialog() {
-    const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
-      width: '70%',
-      height: '60%',
-      panelClass: 'custom-dialog-container',
-    });
+  applyFilters() {
+    const filteredData = this.allEmployees.filter(emp => {
+  const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
+  const podMatch = this.selectedPod === 'All' || emp.pod === this.selectedPod;
+  
+  const assessmentMatch =
+    this.selectedAssessment === 'All' ||
+    (this.selectedAssessment === 'Below 50%' && emp.assessment_progress < 50) ||
+    (this.selectedAssessment === '50%-80%' && emp.assessment_progress >= 50 && emp.assessment_progress <= 80) ||
+    (this.selectedAssessment === 'Above 80%' && emp.assessment_progress > 80);
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.allEmployees = [...this.allEmployees, result];
-        this.applyFilters();
-      }
-    });
+  const certificationMatch =
+    this.selectedCertification === 'All' ||
+    (this.selectedCertification === 'Below 50%' && emp.certification_progress < 50) ||
+    (this.selectedCertification === '50%-80%' && emp.certification_progress >= 50 && emp.certification_progress <= 80) ||
+    (this.selectedCertification === 'Above 80%' && emp.certification_progress > 80);
+
+  return designationMatch && podMatch && assessmentMatch && certificationMatch;
+});
+
+
+    this.dataSource.data = filteredData;
+    if (this.paginator) this.paginator.firstPage();
+  }
+
+  onBatchChange(batchCode: number) {
+    this.selectedBatch = batchCode;
+    this.loadAllData();
   }
 
   openEmployeeDetails(employee: any): void {

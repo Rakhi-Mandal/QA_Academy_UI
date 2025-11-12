@@ -12,10 +12,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { AddEmployeeDialogComponent } from '../../add-employee-dialog/add-employee-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AddEmployeeDialogComponent } from '../../add-employee-dialog/add-employee-dialog.component';
 import { EmployeeDetailsDialogComponent } from '../../employee-details-dialog/employee-details-dialog.component';
-import { EmployeeService, Employee } from '../../../shared/services/employee.service';
+import { EmployeeService } from '../../../shared/services/employee.service';
 
 @Component({
   selector: 'app-fastrack',
@@ -39,25 +39,38 @@ import { EmployeeService, Employee } from '../../../shared/services/employee.ser
   ]
 })
 export class FastrackComponent implements OnInit, AfterViewInit {
+ 
+  displayedColumns = [
+    'slNo',
+    'employeeId',
+    'name',
+    'email',
+    'designation',
+    'assessment_progress',
+    'certification_progress',
+    'course_progress',
+    'action'
+  ];
 
-  displayedColumns = ['slNo', 'employeeId', 'name', 'email', 'designation', 'assessment', 'certification', 'action'];
   dataSource = new MatTableDataSource<any>([]);
   allEmployees: any[] = [];
   designations: string[] = [];
   isLoading = false;
-  
+  selectedPod = 'All';
+  pods: string[] = [];
+
+  selectedBatch = 1; 
+  selectedDesignation = 'All';
+  selectedAssessment = 'All';
+  selectedCertification = 'All';
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   constructor(
     public dialog: MatDialog,
     private employeeService: EmployeeService,
     private snackBar: MatSnackBar
   ) {}
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  selectedBatch = 1; // Default batch
-  selectedDesignation = 'All';
-  selectedAssessment = 'All';
-  selectedCertification = 'All';
 
   ngOnInit() {
     this.loadAllData();
@@ -69,30 +82,34 @@ export class FastrackComponent implements OnInit, AfterViewInit {
 
   loadAllData() {
     this.isLoading = true;
-    
-    // Replace with your actual batch code
+
     this.employeeService.getEmployeesByBatch(this.selectedBatch).subscribe({
       next: (response) => {
         console.log('API Response:', response);
-        
+
         if (response.success && response.data) {
-          // Map API response to match your table structure
           const employees = response.data.map(emp => ({
             employeeId: emp.Employee_ID,
             name: emp.Employee_Name,
             email: emp.Employee_Email,
             designation: emp.Designation,
-            podId: emp.POD_ID,
             pod: emp.POD,
             batchCode: emp.Batch_Code,
-            assessment: emp.assessment || 0, // Default to 0 if not available
-            certification: emp.certification || 0 // Default to 0 if not available
+            assessment_progress: emp.assessment_completion_percent || 0,
+            certification_progress: emp.certification_completion_percent || 0,
+            course_progress: emp.course_completion_percent || 0
           }));
 
           this.allEmployees = [...employees];
           this.dataSource.data = [...employees];
           this.designations = [...new Set(employees.map(e => e.designation))];
-          
+          this.pods = [...new Set(employees.map(e => e.pod))];
+
+          // Reset paginator to first page after loading new data
+          if (this.paginator) {
+            this.paginator.firstPage();
+          }
+
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -113,59 +130,53 @@ export class FastrackComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Method to change batch dynamically
-  onBatchChange(batchCode: number) {
-    this.selectedBatch = batchCode;
+  refreshData() {
+    this.selectedDesignation = 'All';
+    this.selectedAssessment = 'All';
+    this.selectedCertification = 'All';
+    this.selectedPod = 'All';
     this.loadAllData();
   }
 
   applyFilters() {
     const filteredData = this.allEmployees.filter(emp => {
       const designationMatch = this.selectedDesignation === 'All' || emp.designation === this.selectedDesignation;
+      const podMatch = this.selectedPod === 'All' || emp.pod === this.selectedPod;
+      
       const assessmentMatch =
         this.selectedAssessment === 'All' ||
-        (this.selectedAssessment === 'Below 50%' && emp.assessment < 50) ||
-        (this.selectedAssessment === '50%-80%' && emp.assessment >= 50 && emp.assessment <= 80) ||
-        (this.selectedAssessment === 'Above 80%' && emp.assessment > 80);
+        (this.selectedAssessment === 'Below 50%' && emp.assessment_progress < 50) ||
+        (this.selectedAssessment === '50%-80%' && emp.assessment_progress >= 50 && emp.assessment_progress <= 80) ||
+        (this.selectedAssessment === 'Above 80%' && emp.assessment_progress > 80);
+
       const certificationMatch =
         this.selectedCertification === 'All' ||
-        (this.selectedCertification === 'Below 50%' && emp.certification < 50) ||
-        (this.selectedCertification === '50%-80%' && emp.certification >= 50 && emp.certification <= 80) ||
-        (this.selectedCertification === 'Above 80%' && emp.certification > 80);
+        (this.selectedCertification === 'Below 50%' && emp.certification_progress < 50) ||
+        (this.selectedCertification === '50%-80%' && emp.certification_progress >= 50 && emp.certification_progress <= 80) ||
+        (this.selectedCertification === 'Above 80%' && emp.certification_progress > 80);
 
-      return designationMatch && assessmentMatch && certificationMatch;
+      return designationMatch && podMatch && assessmentMatch && certificationMatch;
     });
 
     this.dataSource.data = filteredData;
     
+    // Reset to first page when filters change
     if (this.paginator) {
       this.paginator.firstPage();
     }
   }
 
-  refreshData() {
-    this.selectedDesignation = 'All';
-    this.selectedAssessment = 'All';
-    this.selectedCertification = 'All';
+  onBatchChange(batchCode: number) {
+    this.selectedBatch = batchCode;
     this.loadAllData();
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
   }
 
-  openAddDialog() {
-    const dialogRef = this.dialog.open(AddEmployeeDialogComponent, {
-      width: '70%',
-      height: '60%',
-      panelClass: 'custom-dialog-container',
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.allEmployees = [...this.allEmployees, result];
-        this.applyFilters();
-      }
-    });
+  // Helper method to calculate serial number for display
+  getSerialNumber(index: number): number {
+    if (this.paginator) {
+      return (this.paginator.pageIndex * this.paginator.pageSize) + index + 1;
+    }
+    return index + 1;
   }
 
   openEmployeeDetails(employee: any): void {

@@ -1,16 +1,23 @@
-<div class="relative dialog-container p-6 rounded-2xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-
-  <!-- Close button (top-right) -->
-  <button mat-icon-button (click)="closeDialog()" class="absolute top-3 right-3">
+<div class="dialog-container">
+  <button mat-icon-button (click)="closeDialog()" class="outside-close-btn">
     <mat-icon>close</mat-icon>
   </button>
+<div
+  class="relative dialog-container p-6 rounded-2xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 shadow-xl overflow-y-auto"
+>
 
-  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 border-b border-gray-300 dark:border-gray-700 pb-2">
     <mat-icon color="primary">person</mat-icon>
     Employee Progress Summary
   </h2>
 
-  <ng-container *ngIf="employeeData; else notFound">
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="flex justify-center items-center h-64">
+    <mat-progress-spinner mode="indeterminate" diameter="50" color="primary"></mat-progress-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading && employeeData; else notFound">
     <!-- Basic Info -->
 
     <!-- Combined Progress Bars -->
@@ -26,57 +33,68 @@
         <mat-progress-bar mode="determinate" color="accent" [value]="employeeData.certificationProgress"></mat-progress-bar>
         <p class="text-sm mt-1">{{ employeeData.certificationProgress }}%</p>
       </div>
-          <div>
+      <div>
         <h3 class="font-medium mb-2">Overall Courses Progress</h3>
         <mat-progress-bar mode="determinate" color="accent" [value]="employeeData.certificationProgress"></mat-progress-bar>
         <p class="text-sm mt-1">{{ employeeData.certificationProgress }}%</p>
       </div>
     </div> -->
 
-    <!-- Assessments & Certifications side by side -->
-    <div class="grid grid-cols-2 gap-6 mt-6">
+    <!-- Assessments, Certifications, and Courses side by side -->
+    <div class="flex flex-wrap justify-between gap-4 mt-6">
       <!-- Assessments -->
-      <div>
-        <h3 class="font-semibold text-lg mb-2 flex items-center gap-2">
+      <div class="flex-1 min-w-[280px] bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+        <h3 class="font-semibold text-lg mb-3 flex items-center gap-2 border-b border-gray-300 dark:border-gray-700 pb-2">
           <mat-icon color="primary">assignment</mat-icon>
           Assessments
         </h3>
         <table class="w-full border-collapse text-sm">
-          <tr *ngFor="let a of employeeData.assessments" class="border-b border-gray-300 dark:border-gray-700">
+          <tr
+            *ngFor="let a of employeeData.assessments"
+            class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
             <td class="py-2">{{ a.name }}</td>
-            <td class="text-right font-medium">{{ a.score }}%</td>
+            <td class="text-right font-medium text-primary-600 dark:text-primary-400">{{ a.score }}%</td>
           </tr>
         </table>
       </div>
 
       <!-- Certifications -->
-      <div>
-        <h3 class="font-semibold text-lg mb-2 flex items-center gap-2">
+      <div class="flex-1 min-w-[280px] bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+        <h3 class="font-semibold text-lg mb-3 flex items-center gap-2 border-b border-gray-300 dark:border-gray-700 pb-2">
           <mat-icon color="accent">workspace_premium</mat-icon>
           Certifications
         </h3>
         <table class="w-full border-collapse text-sm">
-          <tr *ngFor="let c of employeeData.certifications" class="border-b border-gray-300 dark:border-gray-700">
+          <tr
+            *ngFor="let c of employeeData.certifications"
+            class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
             <td class="py-2">{{ c.name }}</td>
-            <td class="text-right font-medium">{{ c.completion }}%</td>
+            <td class="text-right font-medium text-amber-600 dark:text-amber-400">{{ c.completion }}%</td>
           </tr>
         </table>
       </div>
-         <div>
-  <h3 class="font-semibold text-lg mb-2 flex items-center gap-2">
-    <mat-icon color="primary">school</mat-icon>
-    Courses Completion
-  </h3>
-  <table class="w-full border-collapse text-sm">
-    <tr *ngFor="let course of employeeData.courses" class="border-b border-gray-300 dark:border-gray-700">
-      <td class="py-2">{{ course.name }}</td>
-    </tr>
-  </table>
-</div>
+
+      <!-- Courses -->
+      <div class="flex-1 min-w-[280px] bg-gray-50 dark:bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+        <h3 class="font-semibold text-lg mb-3 flex items-center gap-2 border-b border-gray-300 dark:border-gray-700 pb-2">
+          <mat-icon color="primary">school</mat-icon>
+          Courses Completion
+        </h3>
+        <table class="w-full border-collapse text-sm">
+          <tr
+            *ngFor="let course of employeeData.courses"
+            class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
+            <td class="py-2">{{ course.name }}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </ng-container>
 
   <ng-template #notFound>
-    <p class="text-center text-red-500 mt-4">Employee details not found.</p>
+    <p class="text-center text-red-500 mt-4 font-medium">Employee details not found.</p>
   </ng-template>
 </div>

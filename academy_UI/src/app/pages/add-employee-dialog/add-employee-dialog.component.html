@@ -24,19 +24,8 @@
         <mat-option value="Developer">Developer</mat-option>
       </mat-select>
     </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Assessment (%)</mat-label>
-      <input matInput type="number" [(ngModel)]="employee.assessment" name="assessment" required />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Certification (%)</mat-label>
-      <input matInput type="number" [(ngModel)]="employee.certification" name="certification" required />
-    </mat-form-field>
   </form>
 </mat-dialog-content>
-
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
   <button mat-raised-button color="primary" [mat-dialog-close]="employee">Add</button>
