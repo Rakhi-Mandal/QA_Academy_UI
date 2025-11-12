@@ -136,6 +136,9 @@ export class FastrackComponent implements OnInit, AfterViewInit {
     this.selectedCertification = 'All';
     this.selectedPod = 'All';
     this.loadAllData();
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
   applyFilters() {

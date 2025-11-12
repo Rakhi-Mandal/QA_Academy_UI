@@ -92,6 +92,11 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
           this.dataSource.data = [...employees];
           this.designations = [...new Set(employees.map(e => e.designation))];
 
+          // Reset paginator to first page after loading new data
+          if (this.paginator) {
+            this.paginator.firstPage();
+          }
+
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
             horizontalPosition: 'end',
@@ -148,6 +153,14 @@ export class MasteryProgramComponent implements OnInit, AfterViewInit {
   onBatchChange(batchCode: number) {
     this.selectedBatch = batchCode;
     this.loadAllData();
+  }
+
+  // Helper method to calculate serial number for display
+  getSerialNumber(index: number): number {
+    if (this.paginator) {
+      return (this.paginator.pageIndex * this.paginator.pageSize) + index + 1;
+    }
+    return index + 1;
   }
 
   /** ➕ Add Employee Dialog */

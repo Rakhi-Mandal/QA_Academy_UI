@@ -1,0 +1,150 @@
+<div class="employee-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Mastery Program Batch Employees</h1>
+      <p class="page-subtitle">Manage and track employee performance</p>
+    </div>
+    <div class="action-buttons">
+      <button mat-icon-button class="refresh-button" (click)="refreshData()" matTooltip="Refresh Data">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Employee Designation</mat-label>
+      <mat-select [(value)]="selectedDesignation" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option *ngFor="let d of designations" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Assessments Completion</mat-label>
+      <mat-select [(value)]="selectedAssessment" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option value="Below 50%">Below 50%</mat-option>
+        <mat-option value="50%-80%">50%-80%</mat-option>
+        <mat-option value="Above 80%">Above 80%</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Certifications Completion</mat-label>
+      <mat-select [(value)]="selectedCertification" (selectionChange)="applyFilters()">
+        <mat-option value="All">All</mat-option>
+        <mat-option value="Below 50%">Below 50%</mat-option>
+        <mat-option value="50%-80%">50%-80%</mat-option>
+        <mat-option value="Above 80%">Above 80%</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container" *ngIf="!isLoading; else loadingState">
+    <table mat-table [dataSource]="dataSource" class="employee-table">
+
+      <!-- SL No -->
+      <ng-container matColumnDef="slNo">
+        <th mat-header-cell *matHeaderCellDef> SL No </th>
+        <td mat-cell *matCellDef="let element; let i = index">
+          {{ getSerialNumber(i) }}
+        </td>
+      </ng-container>
+
+      <!-- Employee ID -->
+      <ng-container matColumnDef="employeeId">
+        <th mat-header-cell *matHeaderCellDef> Employee ID </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="employee-id" [matTooltip]="element.employeeId">{{ element.employeeId }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Employee Name </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="cell-content" [matTooltip]="element.name">{{ element.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="cell-content" [matTooltip]="element.email">{{ element.email }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Designation -->
+      <ng-container matColumnDef="designation">
+        <th mat-header-cell *matHeaderCellDef> Designation </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="designation-badge" [matTooltip]="element.designation">{{ element.designation }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Assessment Progress -->
+      <ng-container matColumnDef="assessment">
+        <th mat-header-cell *matHeaderCellDef> Assessment Completion </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="progress-cell">
+            <span class="progress-value">{{ element.assessment_progress || 0 }}%</span>
+            <mat-progress-bar
+              mode="determinate"
+              color="primary"
+              [value]="element.assessment_progress || 0">
+            </mat-progress-bar>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Certification Progress -->
+      <ng-container matColumnDef="certification">
+        <th mat-header-cell *matHeaderCellDef> Certification Completion </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="progress-cell">
+            <span class="progress-value">{{ element.certification_progress || 0 }}%</span>
+            <mat-progress-bar
+              mode="determinate"
+              color="accent"
+              [value]="element.certification_progress || 0">
+            </mat-progress-bar>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Action -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button class="action-button" matTooltip="View Employee Details" (click)="openEmployeeDetails(element)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <mat-paginator 
+      [length]="dataSource.data.length" 
+      [pageSize]="5" 
+      [pageSizeOptions]="[5, 10, 20]" 
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- Loader -->
+  <ng-template #loadingState>
+    <div class="loading-state">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading employees...</p>
+    </div>
+  </ng-template>
+</div>

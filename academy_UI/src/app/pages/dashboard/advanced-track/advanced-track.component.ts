@@ -107,6 +107,10 @@ pods: string[] = [];
           this.designations = [...new Set(employees.map(e => e.designation))];
           this.pods = [...new Set(employees.map(e => e.pod))];
 
+          // Reset paginator to first page after loading new data
+          if (this.paginator) {
+            this.paginator.firstPage();
+          }
 
           this.snackBar.open('Employees loaded successfully', 'Close', {
             duration: 3000,
@@ -164,6 +168,14 @@ pods: string[] = [];
   onBatchChange(batchCode: number) {
     this.selectedBatch = batchCode;
     this.loadAllData();
+  }
+
+  // Helper method to calculate serial number for display
+  getSerialNumber(index: number): number {
+    if (this.paginator) {
+      return (this.paginator.pageIndex * this.paginator.pageSize) + index + 1;
+    }
+    return index + 1;
   }
 
   openEmployeeDetails(employee: any): void {
