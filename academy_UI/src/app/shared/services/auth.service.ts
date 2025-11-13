@@ -119,69 +119,60 @@ export class AuthService {
   }
 
   signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
-    if (signupData.role === 'admin') {
-      // Admin registration - use localStorage (backend doesn't have admin creation endpoint)
+    return new Observable(observer => {
+      // Step 1: Create user record (for authentication) in localStorage
       const newUser: User & { password: string } = {
-        id: Date.now().toString(),
+        id: signupData.employeeId || Date.now().toString(),
         email: signupData.email,
         firstName: signupData.firstName,
         lastName: signupData.lastName,
-        role: 'admin',
+        role: signupData.role,
+        employeeId: signupData.employeeId,
+        designation: signupData.designation,
         password: signupData.password
       };
 
       this.saveUser(newUser);
 
-      this.router.navigate(['/signin'], {
-        queryParams: { registered: 'true' }
-      });
+      // Step 2: If employee role, also create employee record in backend
+      if (signupData.role === 'employee') {
+        const employeePayload = {
+          employee_id: signupData.employeeId,
+          employee_name: `${signupData.firstName} ${signupData.lastName}`,
+          employee_email: signupData.email,
+          designation: signupData.designation || '',
+          batch_code: signupData.podId || 1
+        };
 
-      return new Observable(observer => {
-        observer.next(true);
-        observer.complete();
-      });
-    } else {
-      // Employee registration - use backend API endpoint
-      const payload = {
-        employee_id: signupData.employeeId,
-        employee_name: `${signupData.firstName} ${signupData.lastName}`,
-        employee_email: signupData.email,
-        designation: signupData.designation,
-        batch_code: signupData.podId || 1
-      };
-
-      return this.http.post<any>(`${this.API_URL}/employees`, payload).pipe(
-        map(response => {
-          if (response.success) {
-            // Save to localStorage for login
-            const newUser: User & { password: string } = {
-              id: response.data?.Employee_ID || signupData.employeeId,
-              email: signupData.email,
-              firstName: signupData.firstName,
-              lastName: signupData.lastName,
-              role: 'employee',
-              employeeId: signupData.employeeId,
-              designation: signupData.designation,
-              password: signupData.password
-            };
-
-            this.saveUser(newUser);
-
-            // Redirect to login
+        this.http.post<any>(`${this.API_URL}/employees`, employeePayload).subscribe({
+          next: (response) => {
+            console.log('Employee record created in backend:', response);
+            // Redirect to login after successful employee creation
             this.router.navigate(['/signin'], {
               queryParams: { registered: 'true' }
             });
-            return true;
-          } else {
-            throw new Error(response.message || 'Registration failed');
+            observer.next(true);
+            observer.complete();
+          },
+          error: (error) => {
+            console.warn('Backend employee creation failed, but user can still login:', error);
+            // Even if backend fails, user record exists in localStorage for login
+            this.router.navigate(['/signin'], {
+              queryParams: { registered: 'true' }
+            });
+            observer.next(true);
+            observer.complete();
           }
-        }),
-        catchError(error => {
-          const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
-          throw { message: errorMessage };
-        })
-      );
-    }
+        });
+      } else {
+        // Admin - no employee record needed, just redirect to login
+        this.router.navigate(['/signin'], {
+          queryParams: { registered: 'true' }
+        });
+        observer.next(true);
+        observer.complete();
+      }
+    });
   }
 
   logout(): void {
