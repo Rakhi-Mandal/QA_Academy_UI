@@ -11,11 +11,11 @@ from routes import pod
 from routes import courses
 from routes import course_record
 from routes import employee
+from routes import user_routes
 from dotenv import load_dotenv
 import os
 from config import settings
 from routes import assessment_record
-from routes import employee
 
 
 # Create uploads directories if they don't exist
@@ -89,6 +89,13 @@ app.include_router(
 app.include_router(batch.router, prefix="/api/batches")
  
 app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
+
+# Register User Routes
+app.include_router(
+    user_routes.router,
+    prefix="/api/users",
+    tags=["Users"]
+)
 
 # Register Course Routes
 app.include_router(

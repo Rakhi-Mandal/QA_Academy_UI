@@ -45,12 +45,11 @@ def service_create_user(data):
         # Step 3: If role = employee, insert into employee table
         if data.user_role.lower() == "employee":
             emp_success = employee_db.create_employee(
-                data.employee_id,           # from UI
-                data.employee_name,         # from UI
-                data.user_mail,             # same as email
-                data.designation,           # from UI
-                data.pod_id,                # from UI
-                user["user_id"]             # linked user_id
+                employee_id=data.employee_id,      # from UI
+                employee_name=data.employee_name,  # from UI
+                employee_email=data.user_mail,     # same as email
+                designation=data.designation,      # from UI
+                batch_code=data.pod_id             # from UI (POD ID mapped to batch_code)
             )
 
             if not emp_success:
