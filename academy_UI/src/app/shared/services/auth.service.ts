@@ -68,11 +68,15 @@ export class AuthService {
     
     if (existingIndex >= 0) {
       users[existingIndex] = user;
+      console.log('Updated existing user in localStorage:', user.email);
     } else {
       users.push(user);
+      console.log('Added new user to localStorage:', user.email);
     }
     
     localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+    console.log('Total users in localStorage:', users.length);
+    console.log('All users:', users.map(u => ({ email: u.email, role: u.role })));
   }
 
   public get currentUserValue(): User | null {
