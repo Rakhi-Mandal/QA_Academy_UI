@@ -75,7 +75,9 @@ interface TopPerformer {
   ]
 })
 export class AdminDefaultDashboardComponent implements OnInit {
-  
+  employeeCount: number = 0;
+  certificationCount: number = 0;
+
   statCards: StatCard[] = [
     {
       title: 'Active Employees',
@@ -92,7 +94,7 @@ export class AdminDefaultDashboardComponent implements OnInit {
       trend: 'up'
     },
     {
-      title: 'Active Batches',
+      title: 'Total Batches',
       value: 3,
       icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
       iconBg: 'bg-purple-50',
@@ -186,6 +188,10 @@ export class AdminDefaultDashboardComponent implements OnInit {
   ngOnInit(): void {
     console.log('Dashboard component initialized');
     this.loadRecentActivities();
+    this.fetchEmployeeCount();
+    this.getCertificationCount();
+    this.getBatchCount()
+
   }
 
   loadRecentActivities(): void {
@@ -314,15 +320,126 @@ export class AdminDefaultDashboardComponent implements OnInit {
     return this.formatUploadTime(time);
   }
 
-  addEmployee(): void {
-    console.log('Add employee clicked');
-  }
+  // addEmployee(): void {
+  //   console.log('Add employee clicked');
+  // }
 
-  addCertification(): void {
-    console.log('Add certification clicked');
-  }
+addPod(): void {
+  const newPod = {
+    pod_id: 'POD001',
+    pod: 'Quality Assurance Team',
+    batch_code: 'BATCH001' // make sure this batch exists
+  };
 
-  addAssignment(): void {
-    console.log('Add assignment clicked');
-  }
+  console.log('📤 Sending request to create POD:', newPod);
+
+  this.dashboardService.createPod(newPod).subscribe({
+    next: (response) => {
+      console.log('✅ POD created successfully:', response);
+      alert(`POD "${newPod.pod}" created successfully!`);
+    },
+    error: (err) => {
+      console.error('❌ Error creating POD:', err);
+      alert(`Failed to create POD: ${err.message}`);
+    }
+  });
+}
+
+
+
+ addCertification(): void {
+  const newCertification = {
+    certification_id: 'CERT001',
+    name: 'AWS Cloud Practitioner',
+    link: 'https://aws.amazon.com/certification/certified-cloud-practitioner/'
+  };
+
+  console.log('📤 Sending request to create certification:', newCertification);
+
+  this.dashboardService.createCertification(newCertification).subscribe({
+    next: (response) => {
+      console.log('✅ Certification created successfully:', response);
+      alert(`Certification "${newCertification.name}" created successfully!`);
+    },
+    error: (err) => {
+      console.error('❌ Error creating certification:', err);
+      alert(`Failed to create certification: ${err.message}`);
+    }
+  });
+}
+
+
+  addAssessment(): void {
+  const newAssessment = {
+    assessment_id: 'A001',
+    name: 'Playwright Automation Assessment',
+    link: 'https://assessments.example.com/playwright'
+  };
+
+  console.log('📤 Sending request to create assessment:', newAssessment);
+
+  this.dashboardService.createAssessment(newAssessment).subscribe({
+    next: (response) => {
+      console.log('✅ Assessment created successfully:', response);
+      alert(`Assessment "${newAssessment.name}" created successfully!`);
+    },
+    error: (err) => {
+      console.error('❌ Error creating assessment:', err);
+      alert(`Failed to create assessment: ${err.message}`);
+    }
+  });
+}
+
+fetchEmployeeCount(): void {
+  this.dashboardService.getEmployeeCount().subscribe({
+    next: (count) => {
+      console.log('✅ Employee count fetched:', count);
+      this.employeeCount = count;
+
+      // Update the "Active Employees" stat card dynamically
+      const employeeCard = this.statCards.find(card => card.title === 'Active Employees');
+      if (employeeCard) {
+        employeeCard.value = count;
+      }
+    },
+    error: (err) => {
+      console.error('❌ Failed to fetch employee count:', err);
+    }
+  });
+}
+getCertificationCount(): void {
+  this.dashboardService.getCertificationCount().subscribe({
+    next: (count) => {
+      console.log('✅ Certification count fetched:', count);
+      this.certificationCount = count;
+
+      // Update the "Certifications" stat card dynamically
+      const certificationCard = this.statCards.find(card => card.title === 'Certifications');
+      if (certificationCard) {
+        certificationCard.value = count;
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error fetching certification count:', error);
+    }
+  });
+}
+
+getBatchCount(): void {
+  this.dashboardService.getBatchCount().subscribe({
+    next: (count) => {
+      console.log('✅ Batch count fetched:', count);
+
+      // Update the "Total Batches" stat card dynamically
+      const batchCard = this.statCards.find(card => card.title === 'Total Batches');
+      if (batchCard) {
+        batchCard.value = count;
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error fetching batch count:', error);
+    }
+  });
+}
+
 }

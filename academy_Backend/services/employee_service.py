@@ -6,6 +6,16 @@ from models.employee import (
     update_employee,
     delete_employee
 )
+from models.employee import (
+    get_all_employees,
+    get_employee_by_id,
+    get_employees_by_batch,
+    create_employee,
+    update_employee,
+    delete_employee,
+    get_employee_count   # <-- add this import
+)
+
 
 
 def service_get_all_employees():
@@ -58,3 +68,11 @@ def service_update_employee(employee_id, data):
 def service_delete_employee(employee_id: str):
     success = delete_employee(employee_id)
     return {"success": success, "message": "Employee deleted successfully" if success else "Failed to delete employee", "data": None}
+
+
+def service_get_employee_count():
+    try:
+        count = get_employee_count()
+        return {"success": True, "message": "Employee count retrieved successfully", "data": {"total_employees": count}}
+    except Exception as e:
+        return {"success": False, "message": f"Error retrieving employee count: {e}", "data": None}

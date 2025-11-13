@@ -1,10 +1,21 @@
 from fastapi import APIRouter, Path, Query
 from schemas.certification import CertificationCreate, CertificationUpdate
 from services import certification_service
-from fastapi.concurrency import run_in_threadpool 
+from models import certification as certification_model
 
 router = APIRouter()
 
+@router.get("/count")
+def get_certification_count():
+    """
+    Get total number of certifications
+    """
+    count = certification_model.get_certification_count()
+    return {
+        "success": True,
+        "message": "Total certifications fetched successfully",
+        "total": count
+    }
 
 @router.get("/get-all")
 def get_all_certifications(
@@ -96,23 +107,4 @@ def delete_certification(
     """
     return certification_service.delete_certification(certification_id)
 
-@router.get(
-    "/count",
-    response_model=dict # Simple dictionary response model
-)
-async def get_certification_count():
-    """Get the total number of certifications."""
-    # Use run_in_threadpool for the synchronous service call
-    result = await run_in_threadpool(certification_service.get_total_certification_count)
-    return result
 
-@router.get(
-    "/count",
-    response_model=dict, # The final response is a simple dictionary
-    tags=["Certifications"]
-)
-async def get_certification_count_api():
-    """Get the total number of certifications."""
-    # The run_in_threadpool ensures the synchronous service call is non-blocking
-    result = await run_in_threadpool(certification_service.get_total_certification_count)
-    return result

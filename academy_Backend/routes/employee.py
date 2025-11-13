@@ -3,6 +3,7 @@ from schemas.employee import EmployeeCreate, EmployeeUpdate
 from services.employee_service import (
     service_get_all_employees,
     service_get_employee_by_id,
+    service_get_employee_count,
     service_get_employees_by_batch,
     service_create_employee,
     service_update_employee,
@@ -11,6 +12,10 @@ from services.employee_service import (
 
 router = APIRouter()
 
+@router.get("/count")
+def get_employee_count():
+    """Get total number of employees"""
+    return service_get_employee_count()
 
 @router.get("/")
 def get_all_employees():
@@ -46,4 +51,5 @@ def update_employee(employee_id: str, data: EmployeeUpdate):
 def delete_employee(employee_id: str):
     """Delete employee record by Employee_ID"""
     return service_delete_employee(employee_id)
+
 

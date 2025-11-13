@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 
 // ============= Interfaces =============
@@ -128,6 +128,61 @@ export class AdminDashboardService {
       catchError(this.handleError)
     );
   }
+
+/**
+ * Create a new POD
+ * @param podData POD details
+ */
+createPod(podData: { pod_id: string; pod: string; batch_code: string }): Observable<any> {
+  const url = `${this.baseUrl}/pods/create-pod`;
+  console.log('🌐 Creating POD:', url, podData);
+
+  return this.http.post<ApiResponse<any>>(url, podData).pipe(
+    tap(response => console.log('✅ POD created successfully:', response)),
+    catchError(this.handleError)
+  );
+}
+
+
+/**
+ * Fetch total employee count
+ */
+getEmployeeCount(): Observable<number> {
+  const url = `${this.baseUrl}/employees/count`;
+  console.log('🌐 Fetching employee count:', url);
+
+  return this.http.get<ApiResponse<{ total_employees: number }>>(url).pipe(
+    map(response => response.data?.total_employees ?? 0),
+    tap(count => console.log('👥 Employee count:', count)),
+    catchError(this.handleError)
+  );
+}
+
+/**
+ * Fetch total number of certifications
+ */
+getCertificationCount(): Observable<number> {
+  const url = `${this.baseUrl}/certifications/count`;
+  console.log('🌐 Fetching certification count:', url);
+
+  return this.http.get<{ success: boolean; message: string; total: number }>(url).pipe(
+    map(response => response.total ?? 0),
+    tap(count => console.log('🏆 Certification count:', count)),
+    catchError(this.handleError)
+  );
+}
+
+getBatchCount(): Observable<number> {
+  const url = `${this.baseUrl}/batches/count`;
+  return this.http.get<{ success: boolean; message: string; total: number }>(url).pipe(
+    map(response => response.total ?? 0),
+    catchError(error => {
+      console.error('❌ Error fetching batch count:', error);
+      return of(0);
+    })
+  );
+}
+
 
   // ============= Error Handling =============
 

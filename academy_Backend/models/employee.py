@@ -146,3 +146,22 @@ def delete_employee(employee_id: str) -> bool:
     finally:
         cursor.close()
         close_db_connection(connection)
+
+def get_employee_count() -> int:
+    """Get total count of employees"""
+    connection = get_db_connection()
+    if not connection:
+        return 0
+    try:
+        cursor = connection.cursor()
+        query = "SELECT COUNT(*) AS total_employees FROM employee_record"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result else 0
+    except Exception as e:
+        print(f"Error in get_employee_count: {e}")
+        return 0
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
