@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map, catchError } from 'rxjs/operators';
 import { User, LoginCredentials, SignupData } from '../models/user.model';
 
 @Injectable({
@@ -11,8 +13,12 @@ export class AuthService {
   public currentUser: Observable<User | null>;
   private readonly STORAGE_KEY = 'currentUser';
   private readonly USERS_KEY = 'registeredUsers';
+  private readonly API_URL = 'http://127.0.0.1:8000/api';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
     const storedUser = localStorage.getItem(this.STORAGE_KEY);
     this.currentUserSubject = new BehaviorSubject<User | null>(
       storedUser ? JSON.parse(storedUser) : null
@@ -113,43 +119,50 @@ export class AuthService {
   }
 
   signup(signupData: SignupData & { password: string }): Observable<boolean> {
-    return new Observable(observer => {
-      setTimeout(() => {
-        const users = this.getAllUsers();
-        
-        if (users.find(u => u.email === signupData.email)) {
-          observer.error({ message: 'Email already registered' });
-          return;
-        }
+    const payload = {
+      email: signupData.email,
+      password: signupData.password,
+      first_name: signupData.firstName,
+      last_name: signupData.lastName,
+      role: signupData.role,
+      employee_id: signupData.employeeId || null,
+      department: signupData.department || null,
+      designation: signupData.designation || null
+    };
 
-        const newUser: User & { password: string } = {
-          id: Date.now().toString(),
-          email: signupData.email,
-          firstName: signupData.firstName,
-          lastName: signupData.lastName,
-          role: signupData.role,
-          employeeId: signupData.employeeId,
-          department: signupData.department,
-          designation: signupData.designation,
-          password: signupData.password
-        };
+    return this.http.post<any>(`${this.API_URL}/users/create`, payload).pipe(
+      map(response => {
+        if (response.success) {
+          const newUser: User = {
+            id: response.data.id || Date.now().toString(),
+            email: response.data.email,
+            firstName: response.data.first_name,
+            lastName: response.data.last_name,
+            role: response.data.role,
+            employeeId: response.data.employee_id,
+            department: response.data.department,
+            designation: response.data.designation
+          };
 
-        this.saveUser(newUser);
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newUser));
+          this.currentUserSubject.next(newUser);
 
-        const { password, ...userWithoutPassword } = newUser;
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userWithoutPassword));
-        this.currentUserSubject.next(userWithoutPassword);
+          if (newUser.role === 'admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/employee/profile']);
+          }
 
-        if (newUser.role === 'admin') {
-          this.router.navigate(['/admin/dashboard']);
+          return true;
         } else {
-          this.router.navigate(['/employee/profile']);
+          throw new Error(response.message || 'Registration failed');
         }
-
-        observer.next(true);
-        observer.complete();
-      }, 500);
-    });
+      }),
+      catchError(error => {
+        const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
+        throw { message: errorMessage };
+      })
+    );
   }
 
   logout(): void {
