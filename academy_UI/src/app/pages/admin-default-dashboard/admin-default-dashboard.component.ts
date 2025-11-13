@@ -20,6 +20,10 @@ import {
   RecentAssessment, 
   RecentCourseCompletion 
 } from '../../shared/services/admin-dashboard.service';
+import { AssessmentDialogComponent } from '../../shared/dialog/assessment-dialog/assessment-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { CertificationDialogComponent } from '../../shared/dialog/certification-dialog/certification-dialog.component';
+import { PodDialogComponent } from '../../shared/dialog/pod-dialog/pod-dialog.component';
 
 interface StatCard {
   title: string;
@@ -183,7 +187,9 @@ export class AdminDefaultDashboardComponent implements OnInit {
     }
   };
 
-  constructor(private dashboardService: AdminDashboardService) {}
+  constructor(private dashboardService: AdminDashboardService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     console.log('Dashboard component initialized');
@@ -324,52 +330,87 @@ export class AdminDefaultDashboardComponent implements OnInit {
   //   console.log('Add employee clicked');
   // }
 
-addPod(): void {
-  const newPod = {
-    pod_id: 'POD001',
-    pod: 'Quality Assurance Team',
-    batch_code: 'BATCH001' // make sure this batch exists
-  };
 
-  console.log('📤 Sending request to create POD:', newPod);
+  addPod(): void {
+  const dialogRef = this.dialog.open(PodDialogComponent, {
+    width: '450px',
+    disableClose: true
+  });
 
-  this.dashboardService.createPod(newPod).subscribe({
-    next: (response) => {
-      console.log('✅ POD created successfully:', response);
-      alert(`POD "${newPod.pod}" created successfully!`);
-    },
-    error: (err) => {
-      console.error('❌ Error creating POD:', err);
-      alert(`Failed to create POD: ${err.message}`);
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      console.log('✅ POD created successfully:', result);
+    }
+  });
+
+  // const newPod = {
+  //   pod_id: 'POD001',
+  //   pod: 'Quality Assurance Team',
+  //   batch_code: 'BATCH001' // make sure this batch exists
+  // };
+
+  // console.log('📤 Sending request to create POD:', newPod);
+
+  // this.dashboardService.createPod(newPod).subscribe({
+  //   next: (response) => {
+  //     console.log('✅ POD created successfully:', response);
+  //     alert(`POD "${newPod.pod}" created successfully!`);
+  //   },
+  //   error: (err) => {
+  //     console.error('❌ Error creating POD:', err);
+  //     alert(`Failed to create POD: ${err.message}`);
+  //   }
+  // });
+}
+
+
+addCertification(): void {
+  const dialogRef = this.dialog.open(CertificationDialogComponent, {
+    width: '450px',
+    disableClose: true
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      console.log('✅ Certification created successfully:', result);
     }
   });
 }
 
+//  addCertification(): void {
+//   const newCertification = {
+//     certification_id: 'CERT001',
+//     name: 'AWS Cloud Practitioner',
+//     link: 'https://aws.amazon.com/certification/certified-cloud-practitioner/'
+//   };
 
+//   console.log('📤 Sending request to create certification:', newCertification);
 
- addCertification(): void {
-  const newCertification = {
-    certification_id: 'CERT001',
-    name: 'AWS Cloud Practitioner',
-    link: 'https://aws.amazon.com/certification/certified-cloud-practitioner/'
-  };
+//   this.dashboardService.createCertification(newCertification).subscribe({
+//     next: (response) => {
+//       console.log('✅ Certification created successfully:', response);
+//       alert(`Certification "${newCertification.name}" created successfully!`);
+//     },
+//     error: (err) => {
+//       console.error('❌ Error creating certification:', err);
+//       alert(`Failed to create certification: ${err.message}`);
+//     }
+//   });
+// }
 
-  console.log('📤 Sending request to create certification:', newCertification);
+ addAssessment() {
+    const dialogRef = this.dialog.open(AssessmentDialogComponent, {
+      width: '400px',
+    });
 
-  this.dashboardService.createCertification(newCertification).subscribe({
-    next: (response) => {
-      console.log('✅ Certification created successfully:', response);
-      alert(`Certification "${newCertification.name}" created successfully!`);
-    },
-    error: (err) => {
-      console.error('❌ Error creating certification:', err);
-      alert(`Failed to create certification: ${err.message}`);
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Assessment created:', result);
+      }
+    });
+  }
 
-
-  addAssessment(): void {
+  addAssessmentw(): void {
   const newAssessment = {
     assessment_id: 'A001',
     name: 'Playwright Automation Assessment',
