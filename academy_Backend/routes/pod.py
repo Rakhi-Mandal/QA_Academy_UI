@@ -9,7 +9,7 @@ router = APIRouter()
 def get_all_pods():
     """
     Get all PODs
-    
+
     Returns:
     - List of all PODs with POD_ID, POD, Batch_code
     """
@@ -22,10 +22,10 @@ def get_pods_by_batch(
 ):
     """
     Get all PODs for a specific batch
-    
+
     Path Parameters:
     - **batch_code**: Batch code (Foreign Key)
-    
+
     Returns:
     - List of PODs belonging to the specified batch
     """
@@ -36,15 +36,15 @@ def get_pods_by_batch(
 def create_pod(pod: PODCreate):
     """
     Create new POD
-    
+
     Request Body:
     - **pod_id**: Unique POD ID (required)
     - **pod**: POD name (required)
     - **batch_code**: Batch code/Foreign Key (required)
-    
+
     Note:
     - batch_code must exist in batch_table
-    
+
     Returns:
     - Created POD details
     """
