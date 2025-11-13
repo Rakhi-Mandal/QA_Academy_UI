@@ -146,12 +146,14 @@ export class AuthService {
       // Step 2: If employee role, also create employee record in backend
       if (signupData.role === 'employee') {
         const employeePayload = {
-          employee_id: signupData.employeeId,
-          employee_name: `${signupData.firstName} ${signupData.lastName}`,
+          employee_id: signupData.employeeId || '',
+          employee_name: `${signupData.firstName} ${signupData.lastName}`.trim(),
           employee_email: signupData.email,
           designation: signupData.designation || '',
           batch_code: signupData.podId || 1
         };
+
+        console.log('Employee payload to backend:', employeePayload);
 
         this.http.post<any>(`${this.API_URL}/employees`, employeePayload).subscribe({
           next: (response) => {

@@ -49,8 +49,8 @@ export class SignupFormComponent {
       return;
     }
 
-    if (this.role === 'employee' && (!this.employeeId || !this.designation || !this.podId)) {
-      this.errorMessage = 'Please fill in all employee fields';
+    if (this.role === 'employee' && (!this.employeeId?.trim() || !this.designation?.trim())) {
+      this.errorMessage = 'Please fill in all employee fields (Employee ID and Designation are required)';
       return;
     }
 
@@ -66,16 +66,20 @@ export class SignupFormComponent {
     const firstName = nameParts[0] || this.fname;
     const lastName = nameParts.slice(1).join(' ') || '';
 
-    this.authService.signup({
+    const signupData = {
       firstName: firstName,
       lastName: lastName,
-      email: this.email,
+      email: this.email.trim(),
       password: this.password,
       role: this.role,
-      employeeId: this.employeeId || undefined,
-      designation: this.designation || undefined,
+      employeeId: this.employeeId?.trim() || undefined,
+      designation: this.designation?.trim() || undefined,
       podId: this.podId
-    }).subscribe({
+    };
+
+    console.log('Signup data being sent:', signupData);
+
+    this.authService.signup(signupData).subscribe({
       next: (success) => {
         this.isLoading = false;
         // Router navigation is handled by AuthService
