@@ -141,31 +141,11 @@ export class AuthService {
 
     return this.http.post<any>(`${this.API_URL}/users/create`, payload).pipe(
       map(response => {
-        if (response.success) {
-          const newUser: User = {
-            id: response.data.id || Date.now().toString(),
-            email: signupData.email,
-            firstName: signupData.firstName,
-            lastName: signupData.lastName,
-            role: signupData.role,
-            employeeId: signupData.employeeId,
-            department: signupData.department,
-            designation: signupData.designation
-          };
-
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newUser));
-          this.currentUserSubject.next(newUser);
-
-          if (newUser.role === 'admin') {
-            this.router.navigate(['/admin/dashboard']);
-          } else {
-            this.router.navigate(['/employee/profile']);
-          }
-
-          return true;
-        } else {
-          throw new Error(response.message || 'Registration failed');
-        }
+        // Registration successful - redirect to login
+        this.router.navigate(['/signin'], {
+          queryParams: { registered: 'true' }
+        });
+        return true;
       }),
       catchError(error => {
         const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';

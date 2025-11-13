@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LabelComponent } from '../../form/label/label.component';
 import { CheckboxComponent } from '../../form/input/checkbox.component';
 import { InputFieldComponent } from '../../form/input/input-field.component';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 
@@ -20,7 +20,7 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './signin-form.component.html',
   styles: ``
 })
-export class SigninFormComponent {
+export class SigninFormComponent implements OnInit {
 
   showPassword = false;
   isChecked = false;
@@ -28,9 +28,21 @@ export class SigninFormComponent {
   email = '';
   password = '';
   errorMessage = '';
+  successMessage = '';
   isLoading = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['registered'] === 'true') {
+        this.successMessage = 'Registration successful! Please login with your credentials.';
+      }
+    });
+  }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
