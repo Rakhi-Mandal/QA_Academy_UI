@@ -27,13 +27,12 @@ export class SignupFormComponent {
   isChecked = false;
 
   fname = '';
-  lname = '';
   email = '';
   password = '';
   role: 'admin' | 'employee' = 'employee';
   employeeId = '';
-  department = '';
   designation = '';
+  podId: number = 1;
   
   errorMessage = '';
   isLoading = false;
@@ -45,8 +44,13 @@ export class SignupFormComponent {
   }
 
   onSignUp() {
-    if (!this.fname || !this.lname || !this.email || !this.password) {
+    if (!this.fname || !this.email || !this.password) {
       this.errorMessage = 'Please fill in all required fields';
+      return;
+    }
+
+    if (this.role === 'employee' && (!this.employeeId || !this.designation || !this.podId)) {
+      this.errorMessage = 'Please fill in all employee fields';
       return;
     }
 
@@ -58,15 +62,19 @@ export class SignupFormComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
+    const nameParts = this.fname.trim().split(' ');
+    const firstName = nameParts[0] || this.fname;
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     this.authService.signup({
-      firstName: this.fname,
-      lastName: this.lname,
+      firstName: firstName,
+      lastName: lastName,
       email: this.email,
       password: this.password,
       role: this.role,
       employeeId: this.employeeId || undefined,
-      department: this.department || undefined,
-      designation: this.designation || undefined
+      designation: this.designation || undefined,
+      podId: this.podId
     }).subscribe({
       next: (success) => {
         this.isLoading = false;

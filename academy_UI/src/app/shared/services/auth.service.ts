@@ -118,30 +118,39 @@ export class AuthService {
     });
   }
 
-  signup(signupData: SignupData & { password: string }): Observable<boolean> {
-    const payload = {
-      email: signupData.email,
-      password: signupData.password,
-      first_name: signupData.firstName,
-      last_name: signupData.lastName,
-      role: signupData.role,
-      employee_id: signupData.employeeId || null,
-      department: signupData.department || null,
-      designation: signupData.designation || null
-    };
+  signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
+    let payload: any;
+
+    if (signupData.role === 'admin') {
+      payload = {
+        user_mail: signupData.email,
+        user_password: signupData.password,
+        user_role: 'admin'
+      };
+    } else {
+      payload = {
+        user_mail: signupData.email,
+        user_password: signupData.password,
+        user_role: 'employee',
+        employee_id: signupData.employeeId,
+        employee_name: `${signupData.firstName} ${signupData.lastName}`,
+        designation: signupData.designation,
+        pod_id: signupData.podId || 1
+      };
+    }
 
     return this.http.post<any>(`${this.API_URL}/users/create`, payload).pipe(
       map(response => {
         if (response.success) {
           const newUser: User = {
             id: response.data.id || Date.now().toString(),
-            email: response.data.email,
-            firstName: response.data.first_name,
-            lastName: response.data.last_name,
-            role: response.data.role,
-            employeeId: response.data.employee_id,
-            department: response.data.department,
-            designation: response.data.designation
+            email: signupData.email,
+            firstName: signupData.firstName,
+            lastName: signupData.lastName,
+            role: signupData.role,
+            employeeId: signupData.employeeId,
+            department: signupData.department,
+            designation: signupData.designation
           };
 
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newUser));

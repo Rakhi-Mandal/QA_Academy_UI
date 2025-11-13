@@ -58,22 +58,23 @@
           </select>
         </div>
 
-        <!-- First Name & Last Name -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-xs font-medium text-gray-900 mb-1">
-               Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              [(ngModel)]="fname"
-              name="fname"
-              placeholder="First name"
-              class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
-              required
-            />
-          </div>
-          <div>
+        <!-- Full Name -->
+        <div>
+          <label class="block text-xs font-medium text-gray-900 mb-1">
+            Full Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="fname"
+            name="fname"
+            placeholder="Enter your full name"
+            class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
+            required
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
           <label class="block text-xs font-medium text-gray-900 mb-1">
             Email <span class="text-red-500">*</span>
           </label>
@@ -86,7 +87,54 @@
             required
           />
         </div>
-        </div>
+
+        <!-- Employee-specific fields -->
+        @if (role === 'employee') {
+          <!-- Employee ID -->
+          <div>
+            <label class="block text-xs font-medium text-gray-900 mb-1">
+              Employee ID <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="employeeId"
+              name="employeeId"
+              placeholder="e.g., FS100"
+              class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
+              required
+            />
+          </div>
+
+          <!-- Designation -->
+          <div>
+            <label class="block text-xs font-medium text-gray-900 mb-1">
+              Designation <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="designation"
+              name="designation"
+              placeholder="e.g., Software Development Engineer in Test - I"
+              class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
+              required
+            />
+          </div>
+
+          <!-- POD ID -->
+          <div>
+            <label class="block text-xs font-medium text-gray-900 mb-1">
+              POD ID <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="podId"
+              name="podId"
+              placeholder="Enter POD ID"
+              class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 transition-all"
+              required
+            />
+          </div>
+        }
         <!-- Password Input -->
         <div>
           <label class="block text-xs font-medium text-gray-900 mb-1">
