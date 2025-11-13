@@ -119,39 +119,69 @@ export class AuthService {
   }
 
   signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
-    let payload: any;
-
     if (signupData.role === 'admin') {
-      payload = {
-        user_mail: signupData.email,
-        user_password: signupData.password,
-        user_role: 'admin'
+      // Admin registration - use localStorage (backend doesn't have admin creation endpoint)
+      const newUser: User & { password: string } = {
+        id: Date.now().toString(),
+        email: signupData.email,
+        firstName: signupData.firstName,
+        lastName: signupData.lastName,
+        role: 'admin',
+        password: signupData.password
       };
+
+      this.saveUser(newUser);
+
+      this.router.navigate(['/signin'], {
+        queryParams: { registered: 'true' }
+      });
+
+      return new Observable(observer => {
+        observer.next(true);
+        observer.complete();
+      });
     } else {
-      payload = {
-        user_mail: signupData.email,
-        user_password: signupData.password,
-        user_role: 'employee',
+      // Employee registration - use backend API endpoint
+      const payload = {
         employee_id: signupData.employeeId,
         employee_name: `${signupData.firstName} ${signupData.lastName}`,
+        employee_email: signupData.email,
         designation: signupData.designation,
-        pod_id: signupData.podId || 1
+        batch_code: signupData.podId || 1
       };
-    }
 
-    return this.http.post<any>(`${this.API_URL}/users/create`, payload).pipe(
-      map(response => {
-        // Registration successful - redirect to login
-        this.router.navigate(['/signin'], {
-          queryParams: { registered: 'true' }
-        });
-        return true;
-      }),
-      catchError(error => {
-        const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
-        throw { message: errorMessage };
-      })
-    );
+      return this.http.post<any>(`${this.API_URL}/employees`, payload).pipe(
+        map(response => {
+          if (response.success) {
+            // Save to localStorage for login
+            const newUser: User & { password: string } = {
+              id: response.data?.Employee_ID || signupData.employeeId,
+              email: signupData.email,
+              firstName: signupData.firstName,
+              lastName: signupData.lastName,
+              role: 'employee',
+              employeeId: signupData.employeeId,
+              designation: signupData.designation,
+              password: signupData.password
+            };
+
+            this.saveUser(newUser);
+
+            // Redirect to login
+            this.router.navigate(['/signin'], {
+              queryParams: { registered: 'true' }
+            });
+            return true;
+          } else {
+            throw new Error(response.message || 'Registration failed');
+          }
+        }),
+        catchError(error => {
+          const errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
+          throw { message: errorMessage };
+        })
+      );
+    }
   }
 
   logout(): void {
