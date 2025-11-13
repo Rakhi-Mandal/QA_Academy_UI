@@ -12,7 +12,6 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
   private readonly STORAGE_KEY = 'currentUser';
-  private readonly USERS_KEY = 'registeredUsers';
   private readonly API_URL = 'http://127.0.0.1:8000/api';
 
   constructor(
@@ -24,59 +23,6 @@ export class AuthService {
       storedUser ? JSON.parse(storedUser) : null
     );
     this.currentUser = this.currentUserSubject.asObservable();
-    
-    this.initializeDemoUsers();
-  }
-
-  private initializeDemoUsers(): void {
-    const existingUsers = this.getAllUsers();
-    if (existingUsers.length === 0) {
-      const demoUsers: Array<User & { password: string }> = [
-        {
-          id: '1',
-          email: 'admin@academy.com',
-          firstName: 'Admin',
-          lastName: 'User',
-          role: 'admin',
-          password: 'password123'
-        },
-        {
-          id: '2',
-          email: 'employee@academy.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'employee',
-          employeeId: 'EMP001',
-          department: 'Engineering',
-          designation: 'QA Engineer',
-          manager: 'Sarah Wilson',
-          password: 'password123'
-        }
-      ];
-      localStorage.setItem(this.USERS_KEY, JSON.stringify(demoUsers));
-    }
-  }
-
-  private getAllUsers(): Array<User & { password: string }> {
-    const usersJson = localStorage.getItem(this.USERS_KEY);
-    return usersJson ? JSON.parse(usersJson) : [];
-  }
-
-  private saveUser(user: User & { password: string }): void {
-    const users = this.getAllUsers();
-    const existingIndex = users.findIndex(u => u.email === user.email);
-    
-    if (existingIndex >= 0) {
-      users[existingIndex] = user;
-      console.log('Updated existing user in localStorage:', user.email);
-    } else {
-      users.push(user);
-      console.log('Added new user to localStorage:', user.email);
-    }
-    
-    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-    console.log('Total users in localStorage:', users.length);
-    console.log('All users:', users.map(u => ({ email: u.email, role: u.role })));
   }
 
   public get currentUserValue(): User | null {
@@ -97,96 +43,129 @@ export class AuthService {
 
   login(credentials: LoginCredentials): Observable<boolean> {
     return new Observable(observer => {
-      setTimeout(() => {
-        const users = this.getAllUsers();
-        const user = users.find(u => u.email === credentials.email);
-
-        if (user && user.password === credentials.password) {
-          const { password, ...userWithoutPassword } = user;
+      // Call backend API to validate login
+      this.http.post<any>(`${this.API_URL}/users/login`, {
+        user_mail: credentials.email,
+        user_password: credentials.password
+      }).subscribe({
+        next: (response) => {
+          console.log('Login response:', response);
           
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(userWithoutPassword));
-          this.currentUserSubject.next(userWithoutPassword);
+          if (response.success && response.data) {
+            // Get user details from backend
+            this.http.get<any>(`${this.API_URL}/users/${response.data.user_id || ''}`)
+              .subscribe({
+                next: (userResponse) => {
+                  if (userResponse.success && userResponse.data) {
+                    const user: User = {
+                      id: userResponse.data.user_id?.toString() || '',
+                      email: userResponse.data.user_mail || credentials.email,
+                      firstName: credentials.email.split('@')[0], // Extract from email
+                      lastName: '',
+                      role: response.data.user_role as 'admin' | 'employee'
+                    };
 
-          if (user.role === 'admin') {
-            this.router.navigate(['/admin/dashboard']);
+                    // Store current session in localStorage
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+                    this.currentUserSubject.next(user);
+
+                    // Navigate based on role
+                    if (user.role === 'admin') {
+                      this.router.navigate(['/admin/dashboard']);
+                    } else {
+                      this.router.navigate(['/employee/profile']);
+                    }
+
+                    observer.next(true);
+                    observer.complete();
+                  } else {
+                    observer.error({ message: 'Unable to fetch user details' });
+                  }
+                },
+                error: (error) => {
+                  // Fallback: Just use role from login response
+                  const user: User = {
+                    id: Date.now().toString(),
+                    email: credentials.email,
+                    firstName: credentials.email.split('@')[0],
+                    lastName: '',
+                    role: response.data.user_role as 'admin' | 'employee'
+                  };
+
+                  localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+                  this.currentUserSubject.next(user);
+
+                  if (user.role === 'admin') {
+                    this.router.navigate(['/admin/dashboard']);
+                  } else {
+                    this.router.navigate(['/employee/profile']);
+                  }
+
+                  observer.next(true);
+                  observer.complete();
+                }
+              });
           } else {
-            this.router.navigate(['/employee/profile']);
+            observer.error({ message: response.message || 'Invalid email or password' });
           }
-
-          observer.next(true);
-          observer.complete();
-        } else {
+        },
+        error: (error) => {
+          console.error('Login error:', error);
           observer.error({ message: 'Invalid email or password' });
         }
-      }, 500);
+      });
     });
   }
 
   signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
     return new Observable(observer => {
-      // Check if email already exists
-      const existingUsers = this.getAllUsers();
-      const emailExists = existingUsers.some(u => u.email.toLowerCase() === signupData.email.toLowerCase());
-      
-      if (emailExists) {
-        observer.error({ message: 'This email is already registered. Please use a different email or login.' });
-        return;
-      }
-
-      // Step 1: Create user record (for authentication) in localStorage
-      const newUser: User & { password: string } = {
-        id: signupData.employeeId || Date.now().toString(),
-        email: signupData.email,
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-        role: signupData.role,
-        employeeId: signupData.employeeId,
-        designation: signupData.designation,
-        password: signupData.password
+      // Prepare payload for backend API
+      const userPayload = {
+        user_mail: signupData.email,
+        user_password: signupData.password,
+        user_role: signupData.role,
+        employee_id: signupData.employeeId || null,
+        employee_name: `${signupData.firstName} ${signupData.lastName}`.trim(),
+        designation: signupData.designation || null,
+        pod_id: signupData.podId || null
       };
 
-      this.saveUser(newUser);
+      console.log('Signup payload to backend:', userPayload);
 
-      // Step 2: If employee role, also create employee record in backend
-      if (signupData.role === 'employee') {
-        const employeePayload = {
-          employee_id: signupData.employeeId || '',
-          employee_name: `${signupData.firstName} ${signupData.lastName}`.trim(),
-          employee_email: signupData.email,
-          designation: signupData.designation || '',
-          batch_code: signupData.podId || 1
-        };
-
-        console.log('Employee payload to backend:', employeePayload);
-
-        this.http.post<any>(`${this.API_URL}/employees`, employeePayload).subscribe({
-          next: (response) => {
-            console.log('Employee record created in backend:', response);
-            // Redirect to login after successful employee creation
+      // Call backend API to create user (and employee if role is employee)
+      this.http.post<any>(`${this.API_URL}/users/create`, userPayload).subscribe({
+        next: (response) => {
+          console.log('Backend registration response:', response);
+          
+          if (response.success) {
+            // Registration successful
             this.router.navigate(['/signin'], {
               queryParams: { registered: 'true' }
             });
             observer.next(true);
             observer.complete();
-          },
-          error: (error) => {
-            console.warn('Backend employee creation failed, but user can still login:', error);
-            // Even if backend fails, user record exists in localStorage for login
-            this.router.navigate(['/signin'], {
-              queryParams: { registered: 'true' }
-            });
-            observer.next(true);
-            observer.complete();
+          } else {
+            observer.error({ message: response.message || 'Registration failed' });
           }
-        });
-      } else {
-        // Admin - no employee record needed, just redirect to login
-        this.router.navigate(['/signin'], {
-          queryParams: { registered: 'true' }
-        });
-        observer.next(true);
-        observer.complete();
-      }
+        },
+        error: (error) => {
+          console.error('Registration error:', error);
+          
+          // Check for duplicate email error
+          if (error.error && error.error.message) {
+            observer.error({ message: error.error.message });
+          } else if (error.status === 500 && error.error && error.error.detail) {
+            // Handle MySQL duplicate entry error
+            if (error.error.detail.includes('Duplicate entry')) {
+              observer.error({ message: 'This email is already registered. Please use a different email or login.' });
+            } else {
+              observer.error({ message: 'Registration failed. Please try again.' });
+            }
+          } else {
+            observer.error({ message: 'Registration failed. Please try again.' });
+          }
+        }
+      });
     });
   }
 
