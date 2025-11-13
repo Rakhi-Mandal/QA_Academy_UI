@@ -120,6 +120,15 @@ export class AuthService {
 
   signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
     return new Observable(observer => {
+      // Check if email already exists
+      const existingUsers = this.getAllUsers();
+      const emailExists = existingUsers.some(u => u.email.toLowerCase() === signupData.email.toLowerCase());
+      
+      if (emailExists) {
+        observer.error({ message: 'This email is already registered. Please use a different email or login.' });
+        return;
+      }
+
       // Step 1: Create user record (for authentication) in localStorage
       const newUser: User & { password: string } = {
         id: signupData.employeeId || Date.now().toString(),
