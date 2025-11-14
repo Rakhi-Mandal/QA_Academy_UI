@@ -219,3 +219,17 @@ def delete_assessment(assessment_id: str) -> Dict:
             message=f"Error deleting assessment: {str(e)}",
             status_code=500
         )
+    
+def get_assessment_count() -> Dict:
+    try:
+        count = assessment_model.get_assessment_count()
+        return success_response(
+            data={"total_assessments": count},
+            message="Assessment count retrieved successfully",
+            status_code=200
+        )
+    except Exception as e:
+        return error_response(
+            message=f"Error retrieving assessment count: {str(e)}",
+            status_code=500
+        )

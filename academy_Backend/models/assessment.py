@@ -205,3 +205,22 @@ def assessment_has_records(assessment_id: str) -> bool:
     finally:
         cursor.close()
         close_db_connection(connection)
+
+def get_assessment_count() -> int:
+    """Get total number of assessments"""
+    connection = get_db_connection()
+    if not connection:
+        return 0
+
+    try:
+        cursor = connection.cursor()
+        query = "SELECT COUNT(*) FROM assessment_table"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result else 0
+    except Exception as e:
+        print(f"Error in get_assessment_count: {e}")
+        return 0
+    finally:
+        cursor.close()
+        close_db_connection(connection)

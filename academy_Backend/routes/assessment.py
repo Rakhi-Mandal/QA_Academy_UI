@@ -5,6 +5,13 @@ from services import assessment_service
 
 router = APIRouter()
 
+@router.get("/count")
+def get_assessment_count():
+    """
+    Get total number of assessments
+    """
+    return assessment_service.get_assessment_count()
+
 
 @router.get("/get-all")
 def get_all_assessments(
@@ -96,3 +103,4 @@ def delete_assessment(
     - Deletion confirmation
     """
     return assessment_service.delete_assessment(assessment_id)
+
