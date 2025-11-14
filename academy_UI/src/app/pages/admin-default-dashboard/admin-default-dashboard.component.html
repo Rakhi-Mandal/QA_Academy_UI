@@ -55,7 +55,7 @@
               <strong>{{ activity.employee }}</strong> {{ activity.action }}
               <span class="activity-target">{{ activity.target }}</span>
             </p>
-            <p class="activity-time">{{ activity.time }}</p>
+            <p class="activity-time">{{ activity.time | date:'medium' }}</p>
           </div>
         </div>
         <div class="empty-state" *ngIf="recentActivities.length === 0"
