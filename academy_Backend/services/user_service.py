@@ -75,22 +75,39 @@ def service_delete_user(user_id):
     success = user_db.delete_user(user_id)
     return {"success": success, "message": "User deleted successfully" if success else "Failed to delete user"}
 
-
 def login_user(user_mail: str, user_password: str):
-    """Service for login"""
+    """Service for login with employee_id fetch"""
+
+    # Step 1: Validate login from user table
     user = user_db.validate_login(user_mail, user_password)
 
-    if user:
-        return {
-            "success": True,
-            "message": "Login successful",
-            "data": {
-                "user_role": user["user_role"]
-            }
-        }
-    else:
+    if not user:
         return {
             "success": False,
             "message": "Invalid email or password",
             "data": None
         }
+
+    user_id = user["user_id"]
+    user_role = user["user_role"]
+
+    # Step 2: Default employee_id
+    employee_id = None
+
+    # Step 3: If user is employee → get employee_id from employee table
+    if user_role.lower() == "employee":
+        employee = employee_db.get_employee_by_user_id(user_id)
+        if employee:
+            employee_id = employee["Employee_ID"]  # from employee table
+
+    # Step 4: Return user info + employee_id
+    return {
+        "success": True,
+        "message": "Login successful",
+        "data": {
+            "user_id": user_id,
+            "user_mail": user_mail,
+            "user_role": user_role,
+            "employee_id": employee_id
+        }
+    }

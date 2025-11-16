@@ -42,80 +42,50 @@ export class AuthService {
   }
 
   login(credentials: LoginCredentials): Observable<boolean> {
-    return new Observable(observer => {
-      // Call backend API to validate login
-      this.http.post<any>(`${this.API_URL}/users/login`, {
-        user_mail: credentials.email,
-        user_password: credentials.password
-      }).subscribe({
-        next: (response) => {
-          console.log('Login response:', response);
-          
-          if (response.success && response.data) {
-            // Get user details from backend
-            this.http.get<any>(`${this.API_URL}/users/${response.data.user_id || ''}`)
-              .subscribe({
-                next: (userResponse) => {
-                  if (userResponse.success && userResponse.data) {
-                    const user: User = {
-                      id: userResponse.data.user_id?.toString() || '',
-                      email: userResponse.data.user_mail || credentials.email,
-                      firstName: credentials.email.split('@')[0], // Extract from email
-                      lastName: '',
-                      role: response.data.user_role as 'admin' | 'employee'
-                    };
+  return new Observable(observer => {
+    this.http.post<any>(`${this.API_URL}/users/login`, {
+      user_mail: credentials.email,
+      user_password: credentials.password
+    }).subscribe({
+      next: (response) => {
+        console.log('Login response:', response);
 
-                    // Store current session in localStorage
-                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-                    this.currentUserSubject.next(user);
+        if (response.success && response.data) {
+          const user: User = {
+            id: response.data.user_id.toString(),       // user_id from user table
+            email: credentials.email, 
+            firstName: credentials.email.split('@')[0],
+            lastName: '',
+            role: response.data.user_role as 'admin' | 'employee',
+            employeeId: response.data.employee_id ?? ''  // employee_id from employee table
+          };
 
-                    // Navigate based on role
-                    if (user.role === 'admin') {
-                      this.router.navigate(['/admin/dashboard']);
-                    } else {
-                      this.router.navigate(['/employee/profile']);
-                    }
+          // Save in Local Storage
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+          this.currentUserSubject.next(user);
 
-                    observer.next(true);
-                    observer.complete();
-                  } else {
-                    observer.error({ message: 'Unable to fetch user details' });
-                  }
-                },
-                error: (error) => {
-                  // Fallback: Just use role from login response
-                  const user: User = {
-                    id: Date.now().toString(),
-                    email: credentials.email,
-                    firstName: credentials.email.split('@')[0],
-                    lastName: '',
-                    role: response.data.user_role as 'admin' | 'employee'
-                  };
-
-                  localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-                  this.currentUserSubject.next(user);
-
-                  if (user.role === 'admin') {
-                    this.router.navigate(['/admin/dashboard']);
-                  } else {
-                    this.router.navigate(['/employee/profile']);
-                  }
-
-                  observer.next(true);
-                  observer.complete();
-                }
-              });
+          // Navigate based on role
+          if (user.role === 'admin') {
+            this.router.navigate(['/admin/dashboard']);
           } else {
-            observer.error({ message: response.message || 'Invalid email or password' });
+            this.router.navigate(['/employee/profile']);
           }
-        },
-        error: (error) => {
-          console.error('Login error:', error);
-          observer.error({ message: 'Invalid email or password' });
+
+          observer.next(true);
+          observer.complete();
+
+        } else {
+          observer.error({ message: response.message || 'Invalid email or password' });
         }
-      });
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        observer.error({ message: 'Invalid email or password' });
+      }
     });
-  }
+  });
+}
+
 
   signup(signupData: SignupData & { password: string; podId?: number }): Observable<boolean> {
     return new Observable(observer => {

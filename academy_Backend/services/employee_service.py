@@ -1,6 +1,7 @@
 from models.employee import (
     get_all_employees,
     get_employee_by_id,
+    get_employee_by_user_id,
     get_employees_by_batch,
     create_employee,
     update_employee,

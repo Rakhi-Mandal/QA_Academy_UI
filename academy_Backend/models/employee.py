@@ -301,3 +301,27 @@ def get_employee_all_records(employee_id: str) -> Dict:
         "assessments": get_employee_assessments(employee_id),
         "courses": get_employee_courses(employee_id)
     }
+
+        
+def get_employee_by_user_id(user_id: int):
+    """Fetch employee details from employee_record table using user_id"""
+    connection = get_db_connection()
+    if not connection:
+        return None
+    try:
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+            SELECT * FROM employee_record
+            WHERE user_id = %s
+        """
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+
+        return result
+    except Exception as e:
+        print(f"Error in get_employee_by_user_id: {e}")
+        return None
+    finally:
+        cursor.close()
+        close_db_connection(connection)
