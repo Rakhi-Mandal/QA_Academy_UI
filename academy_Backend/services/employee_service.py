@@ -45,7 +45,8 @@ def service_create_employee(data):
         data.employee_name,
         data.employee_email,
         data.designation,
-        data.batch_code
+        data.pod_id,
+        data.user_id
     )
     return {"success": success, "message": "Employee created successfully" if success else "Failed to create employee", "data": None}
 

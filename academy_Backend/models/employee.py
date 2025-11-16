@@ -118,7 +118,7 @@ ORDER BY ec.Employee_ID;
         close_db_connection(connection)
 
 
-def create_employee(employee_id: str, employee_name: str, employee_email: str, designation: str, batch_code: int) -> bool:
+def create_employee(employee_id: str, employee_name: str, employee_email: str, designation: str, pod_id: int, user_id: int) -> bool:
     """Create new employee record"""
     connection = get_db_connection()
     if not connection:
@@ -126,10 +126,10 @@ def create_employee(employee_id: str, employee_name: str, employee_email: str, d
     try:
         cursor = connection.cursor()
         query = """
-            INSERT INTO employee_record (Employee_ID, Employee_Name, Employee_Email, Designation, Batch_Code)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO employee_record (Employee_ID, Employee_Name, Employee_Email, Designation, POD_ID, user_id)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(query, (employee_id, employee_name, employee_email, designation, batch_code))
+        cursor.execute(query, (employee_id, employee_name, employee_email, designation, pod_id, user_id))
         connection.commit()
         return True
     except Exception as e:
@@ -139,6 +139,7 @@ def create_employee(employee_id: str, employee_name: str, employee_email: str, d
     finally:
         cursor.close()
         close_db_connection(connection)
+
 
 
 def update_employee(employee_id, employee_name, employee_email, designation, batch_code):

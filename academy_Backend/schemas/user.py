@@ -19,6 +19,7 @@ class UserCreate(BaseModel):
     employee_name: Optional[str] = None
     designation: Optional[str] = None
     pod_id: Optional[int] = None
+    user_id: Optional[int] = None
 
     class Config:
         json_schema_extra = {
@@ -29,11 +30,10 @@ class UserCreate(BaseModel):
                 "employee_id": "FS392",
                 "employee_name": "Lavanya Gorrela",
                 "designation": "Software Development Engineer in Test - I",
-                "pod_id": 2
+                "pod_id": 2,
+                "user_id": 10
             }
         }
-
-
 
 class UserUpdate(BaseModel):
     user_password: Optional[str] = Field(None, description="New password")
