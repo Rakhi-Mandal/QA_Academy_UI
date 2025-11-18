@@ -3,6 +3,7 @@ from models.employee import (
     get_employee_by_id,
     get_employees_by_batch,
     create_employee,
+    get_top_performers,
     update_employee,
     delete_employee
 )
@@ -76,3 +77,18 @@ def service_get_employee_count():
         return {"success": True, "message": "Employee count retrieved successfully", "data": {"total_employees": count}}
     except Exception as e:
         return {"success": False, "message": f"Error retrieving employee count: {e}", "data": None}
+
+def service_get_top_performers():
+    try:
+        records = get_top_performers()
+        return {
+            "success": True,
+            "message": "Top performers retrieved successfully",
+            "data": records
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Error retrieving top performers: {e}",
+            "data": None
+        }

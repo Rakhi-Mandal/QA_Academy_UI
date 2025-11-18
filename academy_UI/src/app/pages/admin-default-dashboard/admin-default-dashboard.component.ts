@@ -196,7 +196,8 @@ export class AdminDefaultDashboardComponent implements OnInit {
     this.loadRecentActivities();
     this.fetchEmployeeCount();
     this.getCertificationCount();
-    this.getBatchCount()
+    this.getBatchCount();
+    this.loadTopPerformers();
 
   }
 
@@ -482,5 +483,29 @@ getBatchCount(): void {
     }
   });
 }
+loadTopPerformers(): void {
+  this.dashboardService.getTopPerformers().subscribe({
+    next: (data) => {
+      this.topPerformers = data.map((item, index) => ({
+  name: item.Employee_Name,
+  department: item.Designation,
+  score: item.percentage,
+  badge: this.getBadge(index)
+}));
+
+      console.log("Top Performers API:", data);
+    },
+    error: (error) => {
+      console.error("❌ Error loading top performers:", error);
+    }
+  });
+}
+private getBadge(index: number): string {
+  if (index === 0) return "🏆";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return "⭐";
+}
+
 
 }

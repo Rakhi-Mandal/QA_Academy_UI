@@ -183,6 +183,17 @@ getBatchCount(): Observable<number> {
   );
 }
 
+getTopPerformers(): Observable<any[]> {
+  const url = `${this.baseUrl}/employees/top-performers`;
+  return this.http.get<ApiResponse<any[]>>(url).pipe(
+    map(response => response.data || []),
+    catchError(error => {
+      console.error('❌ Error fetching top performers:', error);
+      return of([]);
+    })
+  );
+}
+
 
   // ============= Error Handling =============
 

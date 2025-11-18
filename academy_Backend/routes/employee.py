@@ -6,6 +6,7 @@ from services.employee_service import (
     service_get_employee_count,
     service_get_employees_by_batch,
     service_create_employee,
+    service_get_top_performers,
     service_update_employee,
     service_delete_employee
 )
@@ -22,6 +23,10 @@ def get_all_employees():
     """Get all employee records"""
     return service_get_all_employees()
 
+@router.get("/top-performers")
+def get_top_performers():
+    """Get top performers based on assessments + certifications percentage"""
+    return service_get_top_performers()
 
 @router.get("/{employee_id}")
 def get_employee_by_id(employee_id: str):
