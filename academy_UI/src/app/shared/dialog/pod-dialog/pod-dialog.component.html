@@ -1,0 +1,33 @@
+<div class="create-pod-dialog">
+  <h2 mat-dialog-title class="dialog-title">Create New POD</h2>
+
+  <form [formGroup]="podForm" (ngSubmit)="onSubmit()">
+
+    <div class="col p-3">
+   <mat-dialog-content class="dialog-content">
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>POD ID</mat-label>
+        <input matInput formControlName="pod_id" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>POD Name</mat-label>
+        <input matInput formControlName="pod" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Batch Code</mat-label>
+        <input matInput formControlName="batch_code" required />
+      </mat-form-field>
+
+    </mat-dialog-content>
+    </div>
+ 
+
+    <mat-dialog-actions align="end" class="dialog-actions">
+      <button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" type="submit">Create</button>
+    </mat-dialog-actions>
+  </form>
+</div>

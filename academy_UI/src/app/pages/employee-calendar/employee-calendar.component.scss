@@ -29,6 +29,10 @@
     background: linear-gradient(135deg, rgba(255, 165, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
   }
 
+  &.course-card::before {
+    background: linear-gradient(135deg, rgba(0, 168, 107, 0.2) 0%, rgba(0, 168, 107, 0.1) 100%);
+  }
+
   &:hover {
     transform: translateY(-6px) scale(1.01);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);

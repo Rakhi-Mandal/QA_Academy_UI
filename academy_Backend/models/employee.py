@@ -1,6 +1,6 @@
 from database.connection import get_db_connection, close_db_connection
 from typing import List, Dict, Optional
-
+from database import queries
 
 def get_all_employees() -> List[Dict]:
     """Get all employee records"""
@@ -322,6 +322,41 @@ def get_employee_by_user_id(user_id: int):
     except Exception as e:
         print(f"Error in get_employee_by_user_id: {e}")
         return None
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+def get_employee_count() -> int:
+    """Get total count of employees"""
+    connection = get_db_connection()
+    if not connection:
+        return 0
+    try:
+        cursor = connection.cursor()
+        query = "SELECT COUNT(*) AS total_employees FROM employee_record"
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result else 0
+    except Exception as e:
+        print(f"Error in get_employee_count: {e}")
+        return 0
+    finally:
+        cursor.close()
+        close_db_connection(connection)
+
+
+def get_top_performers() -> List[Dict]:
+    """Get top performers based on assessment + certification percentage"""
+    connection = get_db_connection()
+    if not connection:
+        return []
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(queries.GET_TOP_PERFORMERS)
+        performers = cursor.fetchall()
+        return performers
+    except Exception as e:
+        print(f"Error in get_top_performers: {e}")
+        return []
     finally:
         cursor.close()
         close_db_connection(connection)

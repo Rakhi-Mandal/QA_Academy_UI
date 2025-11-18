@@ -2,6 +2,8 @@ from models import assessment_record as record_model
 from schemas.assessment_record import AssessmentRecordCreate, AssessmentRecordUpdate
 from utils.response import success_response, error_response
 from typing import Dict
+import os
+from datetime import datetime
 
 
 def get_all_records() -> Dict:
@@ -30,21 +32,36 @@ def get_records_by_employee(employee_id: str) -> Dict:
         return error_response(f"Error retrieving employee records: {str(e)}", 500)
 
 
-def create_record(record_data: AssessmentRecordCreate) -> Dict:
+def create_record_with_file(record_data, document):
+    """Save uploaded file and create record in DB"""
     try:
-        success = record_model.create_record(
-            upload_time=record_data.upload_time,
-            document=record_data.document,
-            mark_secured=record_data.mark_secured,
-            assessment_id=record_data.assessment_id,
-            employee_id=record_data.employee_id
-        )
-        if not success:
-            return error_response("Failed to create record", 500)
-        return success_response(None, "Record created successfully", 201)
-    except Exception as e:
-        return error_response(f"Error creating record: {str(e)}", 500)
+        uploads_dir = "uploads/assessments"
+        os.makedirs(uploads_dir, exist_ok=True)
 
+        # Create a safe filename
+        safe_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{document.filename}"
+        file_path = os.path.join(uploads_dir, safe_filename)
+
+        # Save the uploaded file
+        with open(file_path, "wb") as f:
+            f.write(document.file.read())
+
+        # Store record in DB
+        success = record_model.create_record(
+            upload_time=record_data["upload_time"],
+            document=file_path.replace("\\", "/"),
+            mark_secured=record_data["mark_secured"],
+            assessment_id=record_data["assessment_id"],
+            employee_id=record_data["employee_id"]
+        )
+
+        if not success:
+            return error_response("Failed to create assessment record", 500)
+
+        return success_response(None, "Assessment record created successfully", 201)
+
+    except Exception as e:
+        return error_response(f"Error creating assessment record: {str(e)}", 500)
 
 def update_record(record_id: int, record_data: AssessmentRecordUpdate) -> Dict:
     try:
@@ -68,3 +85,11 @@ def delete_record(record_id: int) -> Dict:
         return success_response(None, "Record deleted successfully", 200)
     except Exception as e:
         return error_response(f"Error deleting record: {str(e)}", 500)
+
+def get_recent_records(limit: int = 2):
+    try:
+        records = record_model.get_recent_records(limit)
+        return success_response(records, "Recent records fetched successfully", 200)
+    except Exception as e:
+        return error_response(f"Error fetching recent records: {str(e)}", 500)
+ 

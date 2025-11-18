@@ -6,7 +6,7 @@ import { ThemeToggleTwoComponent } from '../../components/common/theme-toggle-tw
 @Component({
   selector: 'app-auth-page-layout',
   imports: [
-    GridShapeComponent,
+    // GridShapeComponent,
     RouterModule,
     ThemeToggleTwoComponent,
   ],

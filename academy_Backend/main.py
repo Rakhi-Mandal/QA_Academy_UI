@@ -13,6 +13,10 @@ from routes import course_record
 from routes import employee
 from routes import user_routes
 from dotenv import load_dotenv
+from routes import dashboard
+from routes import certification
+from routes import certification_record
+from fastapi import APIRouter
 import os
 from config import settings
 from routes import assessment_record
@@ -86,6 +90,12 @@ app.include_router(
     tags=["Employees"]
 )
 
+app.include_router(
+    dashboard.router,
+    prefix="/api/dashboard",
+    tags=["Dashboard"]
+)
+
 app.include_router(batch.router, prefix="/api/batches")
  
 app.include_router(pod.router, prefix="/api/pods", tags=["PODs"])
@@ -115,6 +125,19 @@ app.include_router(
     employee.router, 
     prefix="/api/employee", 
     tags=["Employee"]
+)
+# Register Certification Routes
+app.include_router(
+    certification.router,
+    prefix="/api/certifications",
+    tags=["Certifications"]
+)
+ 
+# Register Certification Record Routes
+app.include_router(
+    certification_record.router,
+    prefix="/api/certification-records",
+    tags=["Certification Records"]
 )
 
 if __name__ == "__main__":

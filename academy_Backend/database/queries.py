@@ -263,3 +263,62 @@ GET_NEXT_COURSE_ID = """
     FROM courses_table
     WHERE Courses_ID REGEXP '^C[0-9]+'
 """
+
+#=================================
+# Top Performers
+#================================
+GET_TOP_PERFORMERS = """
+    SELECT 
+    e.Employee_ID,
+    e.Employee_Name,
+    e.Designation,
+
+    -- Total assessment marks secured
+    IFNULL(a.total_assessment_marks, 0) AS assessment_marks,
+
+    -- Total certification marks secured
+    IFNULL(c.total_certification_marks, 0) AS certification_marks,
+
+    -- Combined total
+    (IFNULL(a.total_assessment_marks, 0) + IFNULL(c.total_certification_marks, 0)) AS total_marks,
+
+    -- Final percentage calculation
+    ROUND(
+        (
+            (IFNULL(a.total_assessment_marks, 0) + IFNULL(c.total_certification_marks, 0))
+            /
+            (
+                (IFNULL(a.assessment_count, 0) + IFNULL(c.certification_count, 0)) * 100
+            )
+        ) * 100,
+        2
+    ) AS percentage
+
+FROM employee_record e
+
+LEFT JOIN (
+    SELECT 
+        Employee_ID,
+        SUM(Mark_Secured + 0) AS total_assessment_marks,
+        COUNT(*) AS assessment_count
+    FROM assessment_record
+    GROUP BY Employee_ID
+) a ON e.Employee_ID = a.Employee_ID
+
+LEFT JOIN (
+    SELECT 
+        Employee_ID,
+        SUM(Mark_Secured + 0) AS total_certification_marks,
+        COUNT(*) AS certification_count
+    FROM certification_record
+    GROUP BY Employee_ID
+    ) c ON e.Employee_ID = c.Employee_ID
+
+-- Avoid division by zero
+WHERE (IFNULL(a.assessment_count, 0) + IFNULL(c.certification_count, 0)) > 0
+
+ORDER BY percentage DESC
+LIMIT 4;
+
+"""
+ 

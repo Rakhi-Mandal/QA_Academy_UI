@@ -3,10 +3,12 @@ from schemas.employee import EmployeeCreate, EmployeeUpdate
 from services.employee_service import (
     service_get_all_employees,
     service_get_employee_by_id,
+    service_get_employee_count,
     service_get_employees_by_batch,
     service_create_employee,
     service_update_employee,
     service_delete_employee,
+    service_get_top_performers
 )
 
 # import the employee_service module as an alias so route functions call module functions
@@ -14,13 +16,20 @@ import services.employee_service as employee_record_service
 
 # ✅ No prefix or tags here — they are handled in main.py
 router = APIRouter()
-
+@router.get("/count")
+def get_employee_count():
+    """Get total number of employees"""
+    return service_get_employee_count()
 
 @router.get("/")
 def get_all_employees():
     """Get all employee records"""
     return service_get_all_employees()
 
+@router.get("/top-performers")
+def get_top_performers():
+    """Get top performers based on assessments + certifications percentage"""
+    return service_get_top_performers()
 
 @router.get("/{employee_id}")
 def get_employee_by_id(employee_id: str):

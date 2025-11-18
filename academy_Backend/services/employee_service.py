@@ -4,8 +4,10 @@ from models.employee import (
     get_employee_by_user_id,
     get_employees_by_batch,
     create_employee,
+    get_top_performers,
     update_employee,
     delete_employee,
+    get_employee_count,
     get_employee_all_records,
     get_employee_certifications,
     get_employee_assessments,
@@ -138,3 +140,25 @@ def get_employee_courses(employee_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching courses: {str(e)}")
+    
+def service_get_employee_count():
+    try:
+        count = get_employee_count()
+        return {"success": True, "message": "Employee count retrieved successfully", "data": {"total_employees": count}}
+    except Exception as e:
+        return {"success": False, "message": f"Error retrieving employee count: {e}", "data": None} 
+    
+def service_get_top_performers():
+    try:
+        records = get_top_performers()
+        return {
+            "success": True,
+            "message": "Top performers retrieved successfully",
+            "data": records
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Error retrieving top performers: {e}",
+            "data": None
+        }
